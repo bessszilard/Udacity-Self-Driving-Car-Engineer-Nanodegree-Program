@@ -1,4 +1,4 @@
-# Camera calibration
+# Main process
 #importing some useful packages
 import glob
 import matplotlib.pyplot as plt
@@ -8,6 +8,7 @@ import cv2
 
 from cameraCalibration   import get_undistorted_image
 from combiningThresholds import sobel_mag_dir_treshold, hls_convert_and_filter
+from adjust_filter_params import adjuct_filter_parameters
 
 # calculated already with cameraCalibration.py
 cameraMx = np.array([[1.15660712e+03, 0.00000000e+00, 6.68960302e+02],
@@ -46,18 +47,22 @@ for i in range(4, len(images_file_names)):
     disp_imgRow2 = np.concatenate((disp_imgRow2, img), axis=1)
 
 image = np.concatenate((disp_imgRow1, disp_imgRow2), axis=0)
-image = cv2.blur = cv2.blur(image, (5,5))
-ksize = 5 # Choose a larger odd number to smooth gradient measurements
+# image = cv2.blur(image, (5,5))
+# ksize = 5 # Choose a larger odd number to smooth gradient measurements
 
-sobelRes = sobel_mag_dir_treshold(image, sobel_kernel=ksize, mag_thresh=sobelMag, dir_thresh=sobelAngMin)
-hlsRes = hls_convert_and_filter(image, h_ch, l_ch, s_ch)
+# sobelRes = sobel_mag_dir_treshold(image, sobel_kernel=ksize, mag_thresh=sobelMag, dir_thresh=sobelAngMin)
+# hlsRes = hls_convert_and_filter(image, h_ch, l_ch, s_ch)
 
-combinedPiture = np.zeros_like(image)
-combinedPiture[:,:,0] = hlsRes
-combinedPiture[:,:,1] = sobelRes
-combinedPiture[:,:,2] = 0
+# combinedPiture = np.zeros_like(image)
+# combinedPiture[:,:,0] = hlsRes
+# combinedPiture[:,:,1] = sobelRes
+# combinedPiture[:,:,2] = 0
 
-plt.imshow(combinedPiture)
+adjuct_filter_parameters(image)
+# filter_and_show(image, h_ch, l_ch, s_ch, sobelMag, sobelAngMin )
+
+
+# plt.imshow(combinedPiture)
 # plt.imshow(hlsRes)
 
 plt.show()

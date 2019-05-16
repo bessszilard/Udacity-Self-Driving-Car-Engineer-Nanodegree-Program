@@ -79,32 +79,3 @@ def hls_convert_and_filter(rgb_image, h, l, s):
     high_th = np.array([h[1], l[1], s[1]])
     res = cv2.inRange(local_image, low_th, high_th)
     return res
-
-# # image = mpimg.imread('test_images/signs_vehicles_xygrad.png')
-# image = mpimg.imread('test_images/test1.jpg')
-# # Choose a Sobel kernel size
-# ksize = 3 # Choose a larger odd number to smooth gradient measurements
-# # Apply each of the thresholding functions
-# gradx = abs_sobel_thresh(image, orient='x', sobel_kernel=ksize, thresh=(20, 100))
-# grady = abs_sobel_thresh(image, orient='y', sobel_kernel=ksize, thresh=(20, 100))
-# mag_binary = mag_thresh(image, sobel_kernel=ksize, mag_thresh=(20, 100))
-# dir_binary = dir_threshold(image, sobel_kernel=ksize, thresh=( np.radians(45), np.pi/2))
-
-# f, (ax) = plt.subplots(2, 3, figsize=(24, 5))
-# f.tight_layout()
-# ax[0][0].imshow(image)
-# ax[0][0].set_title('Original Image', fontsize=10)
-# ax[0][1].imshow(gradx, cmap='gray')
-# ax[0][1].set_title('Thresholded Gradient X direction', fontsize=10)
-# ax[0][2].imshow(grady, cmap='gray')
-# ax[0][2].set_title('Thresholded Gradient Y direction', fontsize=10)
-# ax[1][0].imshow(mag_binary, cmap='gray')
-# ax[1][0].set_title('Threshold magnitude', fontsize=10)
-# ax[1][1].imshow(dir_binary, cmap='gray')
-# ax[1][1].set_title('Directions of the Gradient', fontsize=10)
-
-# plt.subplots_adjust(left=0., right=1, top=0.9, bottom=0.)
-
-# plt.show()
-
-# cv2.waitKey(0)
