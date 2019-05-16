@@ -64,24 +64,25 @@ def get_calibration_params(images_file_names, nx, ny):
 
     return mtx, distCoeffs
 
-single_img = mpimg.imread('camera_cal/calibration1.jpg')
-images = glob.glob('camera_cal/calibration*.jpg')
-nx = 9
-ny = 6
 
-mtx, distCoeffs = get_calibration_params(images, nx, ny)
-dst = get_undistorted_image(single_img, mtx, distCoeffs)
+def calibrate():
+    single_img = mpimg.imread('camera_cal/calibration1.jpg')
+    images = glob.glob('camera_cal/calibration*.jpg')
+    nx = 9
+    ny = 6
 
-f, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 10))
+    mtx, distCoeffs = get_calibration_params(images, nx, ny)
+    dst = get_undistorted_image(single_img, mtx, distCoeffs)
 
-ax1.imshow(single_img)
-ax1.set_title("Normal image")
-ax2.imshow(dst)
-ax2.set_title("Undistorted image")
+    # print(mtx, "\n", distCoeffs)
 
-plt.show()
+    f, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 10))
 
+    ax1.imshow(single_img)
+    ax1.set_title("Normal image")
+    ax2.imshow(dst)
+    ax2.set_title("Undistorted image")
 
-
+    plt.show()
 
 # cv2.waitKey(0)
