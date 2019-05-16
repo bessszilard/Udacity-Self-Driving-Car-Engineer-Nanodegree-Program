@@ -58,6 +58,27 @@ def dir_threshold(image, sobel_kernel=3, thresh=(0, np.pi/2)):
     dir_binary[ (thresh[0] < graddir) & ( graddir < thresh[1] ) ] = 1
     return dir_binary
 
+def sobel_mag_dir_treshold(image, sobel_kernel=3, mag_thresh=(0, 255), dir_thresh=(0, np.pi/2)):
+    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize = sobel_kernel)
+    sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize = sobel_kernel)
+    
+    abs_sobelxy = np.sqrt( np.square(sobelx) + np.square(sobely) )
+    sobelxyScaled = np.uint8( 255 * abs_sobelxy / np.max(abs_sobelxy) )
+
+    abs_sobelxy = np.sqrt( np.square(sobelx) + np.square(sobely) )
+    graddir = np.arctan2(np.absolute(sobely), np.absolute(sobelx))
+    
+    res_binary = np.zeros_like(sobelxyScaled)
+    res_binary[ ((mag_thresh[0] < sobelxyScaled) & (sobelxyScaled < mag_thresh[1]) & (dir_thresh[0] < graddir) & ( graddir < dir_thresh[1] )) ] = 255
+    return res_binary
+
+def hls_convert_and_filter(rgb_image, h, l, s):
+    local_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2HLS)
+    low_th = np.array([h[0], l[0], s[0]])
+    high_th = np.array([h[1], l[1], s[1]])
+    res = cv2.inRange(local_image, low_th, high_th)
+    return res
 
 # # image = mpimg.imread('test_images/signs_vehicles_xygrad.png')
 # image = mpimg.imread('test_images/test1.jpg')
