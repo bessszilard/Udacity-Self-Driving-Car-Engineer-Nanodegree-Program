@@ -53,7 +53,7 @@ This is the results.
 
 ![distored_undistored](writeup_images\distored_undistored.jpg)
 
-
+*Figure 1. Chessboard corner finding results*
 
 After the object and image points were determined, I calculated **camera matrix** and **distortion coefficients** with ```calibrateCamera()``` function, and generate the undistorted the image.
 
@@ -61,16 +61,28 @@ Final results:
 
 ![calibraiton results](writeup_images\calib_results.jpg)
 
-
+*Figure 2. Normal and undistorted image*
 
 ### Pipeline (single images)
 
-#### 1. Provide an example of a distortion-corrected image.
+#### 1. Generate undistorted image
 
-To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
-![alt text][image2]
+I to eliminate distortion use the  **camera matrix** and **distortion coefficients**, which are calculated with camera calibration.
+![Sobel and HLS](writeup_images\distored_undistored_road.jpg)
 
-#### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
+*Figure 3: Normal and Undistorted road image*
+
+#### 2. Image filtering
+
+I lane line detecting I used the combination of Sobel edge detection and HLS color filtering. I used absolute gradient magnitude and gradient direction for Sobel. I combined the 6 test image into one, and than I created a window, where I can manually adjusted the threshold limits. After the limit tuning, I add the two filters output, the results is *Figure 4* . Green color is the output of the Sobel filter and blue is for HLS filter. These functions are located ```combiningThresholds.py``` file.
+
+![Sobel and HLS](writeup_images\cobined_sobel_HLS_filt_trackbars.jpg)
+
+*Figure 4. Results of Sobel and HLS filtering for the combined test pictures filter*
+
+
+
+
 
 I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
 

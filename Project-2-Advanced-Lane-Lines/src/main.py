@@ -6,9 +6,11 @@ import matplotlib.image as mpimg
 import numpy as np
 import cv2
 
+from moviepy.editor import VideoFileClip
 from cameraCalibration   import get_undistorted_image
 from combiningThresholds import sobel_mag_dir_treshold, hls_convert_and_filter, draw_region_of_interest
 from adjust_filter_params import adjuct_filter_parameters, filter_and_show
+from gemoetries import get_birds_eye_img
 
 # calculated already with cameraCalibration.py
 cameraMx = np.array([[1.15660712e+03, 0.00000000e+00, 6.68960302e+02],
@@ -31,53 +33,88 @@ images_file_names = glob.glob('test_images/test*.jpg')
 rows = 2
 cols = 3
 
-single_image = mpimg.imread('test_images/straight_lines1.jpg')
+single_image = mpimg.imread('test_images/straight_lines2.jpg')
 
-roiTopLen = 150
-rioBottomLen = 910
-roiOffset = 20
+# roiTopLen = 150
+# rioBottomLen = 910
+# roiOffset = 20
 
-img = mpimg.imread(images_file_names[0])
-img = get_undistorted_image(img, cameraMx, distCoeffs)
-disp_imgRow1 = draw_region_of_interest(img, roiTopLen, rioBottomLen, roiOffset)
+roiTopLen = 130
+rioBottomLen = 800
+roiOffset = 7
 
-for i in range(1, 3): # len(images_file_names)):
-    filename = images_file_names[i]
-    img = mpimg.imread(filename)
-    img = get_undistorted_image(img, cameraMx, distCoeffs)
-    img = draw_region_of_interest(img, roiTopLen, rioBottomLen, roiOffset)
-    disp_imgRow1 = np.concatenate((disp_imgRow1, img), axis=1)
+# img = mpimg.imread(images_file_names[0])
+# img = get_undistorted_image(img, cameraMx, distCoeffs)
+# disp_imgRow1 = draw_region_of_interest(img, roiTopLen, rioBottomLen, roiOffset)
 
-img = mpimg.imread(images_file_names[3])
-img = get_undistorted_image(img, cameraMx, distCoeffs)
-disp_imgRow2 = draw_region_of_interest(img, roiTopLen, rioBottomLen, roiOffset)
-for i in range(4, len(images_file_names)):
-    filename = images_file_names[i]
-    img = mpimg.imread(filename)
-    img = get_undistorted_image(img, cameraMx, distCoeffs)
-    img = draw_region_of_interest(img, roiTopLen, rioBottomLen, roiOffset)
-    disp_imgRow2 = np.concatenate((disp_imgRow2, img), axis=1)
+# for i in range(1, 3): # len(images_file_names)):
+#     filename = images_file_names[i]
+#     img = mpimg.imread(filename)
+#     img = get_undistorted_image(img, cameraMx, distCoeffs)
+#     img = draw_region_of_interest(img, roiTopLen, rioBottomLen, roiOffset)
+#     disp_imgRow1 = np.concatenate((disp_imgRow1, img), axis=1)
 
-image = np.concatenate((disp_imgRow1, disp_imgRow2), axis=0)
-# image = cv2.blur(image, (5,5))
-ksize = 5 # Choose a larger odd number to smooth gradient measurements
+# img = mpimg.imread(images_file_names[3])
+# img = get_undistorted_image(img, cameraMx, distCoeffs)
+# disp_imgRow2 = draw_region_of_interest(img, roiTopLen, rioBottomLen, roiOffset)
+# for i in range(4, len(images_file_names)):
+#     filename = images_file_names[i]
+#     img = mpimg.imread(filename)
+#     img = get_undistorted_image(img, cameraMx, distCoeffs)
+#     img = draw_region_of_interest(img, roiTopLen, rioBottomLen, roiOffset)
+#     disp_imgRow2 = np.concatenate((disp_imgRow2, img), axis=1)
 
-# image = np.copy(single_image)
+# image = np.concatenate((disp_imgRow1, disp_imgRow2), axis=0)
+# # image = cv2.blur(image, (5,5))
+# ksize = 5 # Choose a larger odd number to smooth gradient measurements
 
-sobelRes = sobel_mag_dir_treshold(image, sobel_kernel=ksize, mag_thresh=sobelMag, dir_thresh=sobelAngMin)
-hlsRes = hls_convert_and_filter(image, h_ch, l_ch, s_ch)
+# # image = np.copy(single_image)
 
-combinedPiture = np.zeros_like(image)
-combinedPiture[:,:,0] = hlsRes
-combinedPiture[:,:,1] = sobelRes
-combinedPiture[:,:,2] = 0
+# sobelRes = sobel_mag_dir_treshold(image, sobel_kernel=ksize, mag_thresh=sobelMag, dir_thresh=sobelAngMin)
+# hlsRes = hls_convert_and_filter(image, h_ch, l_ch, s_ch)
+
+# combinedPiture = np.zeros_like(image)
+# combinedPiture[:,:,0] = hlsRes
+# combinedPiture[:,:,1] = sobelRes
+# combinedPiture[:,:,2] = 0
+
+def process_image(input_image):
+    image = np.copy(input_image)
+    image = get_undistorted_image(image, cameraMx, distCoeffs)
+    image = draw_region_of_interest(image, roiTopLen, rioBottomLen, roiOffset)
+    image = get_birds_eye_img(image)
+    return image
+
+img = process_image(single_image)
+plt.imshow(img)
+plt.show()
 
 # adjuct_filter_parameters(image)
+
+
+# img = get_undistorted_image(single_image, cameraMx, distCoeffs)
+# # img = np.concatenate((single_image, img), axis=1)
+
+
+# f, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 20))
+# ax1.set_title("Normal image")
+# ax1.imshow(single_image)
+# ax2.set_title("Undistorted image")
+# ax2.imshow(img)
+
+
 
 # img = cv2.addWeighted(single_image, alpha, roi, 1 - alpha, 0, img)
 
 # filter_and_show(single_image, h_ch, l_ch, s_ch, sobelMag, sobelAngMin )
-plt.imshow(image)
+# plt.imshow(image)
 # plt.imshow(hlsRes)
 
-plt.show()
+
+
+
+# # plt.show()
+# white_output = 'test_videos_output/project_video.mp4'
+# clip1 = VideoFileClip("project_video.mp4")
+# white_clip = clip1.fl_image(process_image) #NOTE: this function expects color images!!
+# white_clip.write_videofile(white_output, audio=False)

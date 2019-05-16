@@ -107,7 +107,6 @@ def region_of_interest(img, vertices):
     
 def draw_region_of_interest(input_image, top_length, bottom_length, vert_offset):
     image = np.copy(input_image)
-
     img_cols = image.shape[1]
     img_rows = image.shape[0]
 

@@ -31,8 +31,8 @@ def filter_and_show(image, h, l, s, sobel_mag, sobel_angle):
     combinedPiture[:,:,2] = 0
         
     cv2.imshow(filter_window_name, combinedPiture )
-    cv2.waitKey(0)
-    
+    # cv2.waitKey(0)
+
 def hls_h_min_ch_trackbar(val):
     global h_ch
     h_ch[0] = val
@@ -124,6 +124,7 @@ def adjuct_filter_parameters(input_image):
 
     filter_window_name = "Filtering"
     cv2.namedWindow(filter_window_name, cv2.WINDOW_NORMAL)
+    cv2.resizeWindow(filter_window_name, 700, 500)
     trackbarHMinName = "H min"
     trackbarHMaxName = "H max"
     trackbarLMinName = "L min"
