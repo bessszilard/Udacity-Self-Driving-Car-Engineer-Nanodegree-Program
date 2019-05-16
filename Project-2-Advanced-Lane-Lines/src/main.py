@@ -7,19 +7,44 @@ import numpy as np
 import cv2
 
 from cameraCalibration import get_undistorted_image
-from combiningThresholds import abs_sobel_thresh, abs_sobel_thresh, mag_thresh, dir_threshold
+from combiningThresholds import abs_sobel_thresh, abs_sobel_thresh, mag_thresh, dir_threshold, mag_dir_treshold
 
-sobelMin = 0
-sobelMax = 255
+sobelMagMin = 0
+sobelMagMax = 255
+sobelAngMin = 0
+sobelAngMax = 180
 
-def on_sobel_min_trackbar(val):
+def on_sobel_mag_min_trackbar(val):
+    global sobelMagMin
+    sobelMagMin = val
+    res = mag_dir_treshold(image, sobel_kernel=ksize, mag_thresh=(sobelMagMin, sobelMagMax),
+                                 dir_thresh = (sobelAngMin, sobelAngMax))
+    cv2.imshow(sobel_window_name, res )
+    # cv2.resizeWindow(sobel_window_name, 600,600)
 
-    magnitude = mag_thresh(image, sobel_kernel=ksize, mag_thresh=(20, 200))
-    cv2.imshow(sobel_window_name, magnitude )
+def on_sobel_mag_max_trackbar(val):
+    global sobelMagMax
+    sobelMagMax = val
+    res = mag_dir_treshold(image, sobel_kernel=ksize, mag_thresh=(sobelMagMin, sobelMagMax),
+                                 dir_thresh = (sobelAngMin, sobelAngMax))
+    cv2.imshow(sobel_window_name, res )  
+    # cv2.resizeWindow(sobel_window_name, 600,600)
 
-def on_sobel_max_trackbar(val):
-    gradx = abs_sobel_thresh(image, orient='x', sobel_kernel=ksize, thresh=(val, 255))
-    cv2.imshow(sobel_window_name, gradx )  
+def on_sobel_ang_min_trackbar(val):
+    global sobelAngMin
+    sobelAngMin = np.radians(val - 90)
+    res = mag_dir_treshold(image, sobel_kernel=ksize, mag_thresh=(sobelMagMin, sobelMagMax),
+                                 dir_thresh=(sobelAngMin, sobelAngMax))
+    cv2.imshow(sobel_window_name, res )  
+    # cv2.resizeWindow(sobel_window_name, 600,600)
+
+def on_sobel_ang_max_trackbar(val):
+    global sobelAngMax
+    sobelAngMax = np.radians(val - 90)
+    res = mag_dir_treshold(image, sobel_kernel=ksize, mag_thresh=(sobelMagMin, sobelMagMax),
+                                 dir_thresh=(sobelAngMin, sobelAngMax))
+    cv2.imshow(sobel_window_name, res )  
+    # cv2.resizeWindow(sobel_window_name, 600,600)
 
 # calculated already with cameraCalibration.py
 cameraMx = np.array([[1.15660712e+03, 0.00000000e+00, 6.68960302e+02],
@@ -27,11 +52,11 @@ cameraMx = np.array([[1.15660712e+03, 0.00000000e+00, 6.68960302e+02],
                      [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
 distCoeffs = np.array([(-0.23185386, -0.11832054, -0.00116561,  0.00023902,  0.15356159)])
 
+image = mpimg.imread('test_images/test2.jpg')
+image = cv2.blur = cv2.blur(image, (5,5))
+image = get_undistorted_image(image, cameraMx, distCoeffs)
 
-image = mpimg.imread('test_images/test1.jpg')
-dst = get_undistorted_image(image, cameraMx, distCoeffs)
-
-ksize = 3 # Choose a larger odd number to smooth gradient measurements
+ksize = 5 # Choose a larger odd number to smooth gradient measurements
 # gradx = abs_sobel_thresh(image, orient='x', sobel_kernel=ksize, thresh=(30, 255))
 # grady = abs_sobel_thresh(image, orient='y', sobel_kernel=ksize, thresh=(30, 255))
 # mag_binary = mag_thresh(image, sobel_kernel=ksize, mag_thresh=(20, 200))
@@ -39,16 +64,30 @@ ksize = 3 # Choose a larger odd number to smooth gradient measurements
 
 sobel_window_name = "Sobel mag"
 
-cv2.namedWindow(sobel_window_name)
+cv2.namedWindow(sobel_window_name, cv2.WINDOW_NORMAL)
 
-trackbarMinName = "Min tresh"
-trackbarMaxNme = "Max tresh"
+# desiredWidth = 640
+# desiredheight = 480
+# cv2.resizewindow(sobel_window_name, desiredWidth,desiredheight)
 
-cv2.createTrackbar(trackbarMinName, sobel_window_name, 0, 255, on_sobel_min_trackbar)
-cv2.createTrackbar(trackbarMaxNme, sobel_window_name, 0, 255, on_sobel_max_trackbar)
+trackbarMagMinName = "Min mag"
+trackbarMagMaxName = "Max mag"
+trackbarAngMinName = "Min angle"
+trackbarAngMaxName = "Max angle"
 
+cv2.createTrackbar(trackbarMagMinName, sobel_window_name, 0, 255, on_sobel_mag_min_trackbar)
+cv2.createTrackbar(trackbarMagMaxName, sobel_window_name, 0, 255, on_sobel_mag_max_trackbar)
 
-on_sobel_min_trackbar(0)
+cv2.createTrackbar(trackbarAngMinName, sobel_window_name, 0, 180, on_sobel_ang_min_trackbar)
+cv2.createTrackbar(trackbarAngMaxName, sobel_window_name, 0, 180, on_sobel_ang_max_trackbar)
+
+cv2.setTrackbarPos(trackbarMagMinName, sobel_window_name, sobelMagMin )
+cv2.setTrackbarPos(trackbarMagMaxName, sobel_window_name, sobelMagMax )
+cv2.setTrackbarPos(trackbarAngMinName, sobel_window_name, sobelAngMin )
+cv2.setTrackbarPos(trackbarAngMaxName, sobel_window_name, sobelAngMax )
+
+# on_sobel_mag_min_trackbar(0)
+# on_sobel_mag_max_trackbar(255)
 
 # f, (ax) = plt.subplots(2, 3, figsize=(24, 5))
 # f.tight_layout()
