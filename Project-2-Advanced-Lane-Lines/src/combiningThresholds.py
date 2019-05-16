@@ -79,3 +79,45 @@ def hls_convert_and_filter(rgb_image, h, l, s):
     high_th = np.array([h[1], l[1], s[1]])
     res = cv2.inRange(local_image, low_th, high_th)
     return res
+
+def region_of_interest(img, vertices):
+    """
+    Applies an image mask.
+    
+    Only keeps the region of the image defined by the polygon
+    formed from `vertices`. The rest of the image is set to black.
+    `vertices` should be a numpy array of integer points.
+    """
+    #defining a blank mask to start with
+    mask = np.zeros_like(img)   
+    
+    #defining a 3 channel or 1 channel color to fill the mask with depending on the input image
+    if len(img.shape) > 2:
+        channel_count = img.shape[2]  # i.e. 3 or 4 depending on your image
+        ignore_mask_color = (255,) * channel_count
+    else:
+        ignore_mask_color = 255
+        
+    #filling pixels inside the polygon defined by "vertices" with the fill color    
+    cv2.fillPoly(mask, vertices, ignore_mask_color)
+    
+    #returning the image only where mask pixels are nonzero
+    masked_image = cv2.bitwise_and(img, mask)
+    return masked_image
+    
+def draw_region_of_interest(input_image, top_length, bottom_length, vert_offset):
+    image = np.copy(input_image)
+
+    img_cols = image.shape[1]
+    img_rows = image.shape[0]
+
+    roiTop = img_rows / 1.6
+    roiBottom = img_rows - 50
+    roiTopLen = top_length 
+    roiBottomLen = bottom_length
+    vertices = np.array([[(img_cols / 2 - roiBottomLen / 2 + vert_offset , roiBottom),      # left_bot
+                        (img_cols / 2 - roiTopLen / 2      + vert_offset , roiTop),  # left_top
+                        (img_cols / 2 + roiTopLen / 2      + vert_offset , roiTop),  # right_top
+                        (img_cols / 2 + roiBottomLen / 2   + vert_offset , roiBottom)]], dtype=np.int32)
+    
+    return cv2.polylines(image, vertices,  True, (255,0,0), 5)

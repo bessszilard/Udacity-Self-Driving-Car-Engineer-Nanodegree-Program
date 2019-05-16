@@ -31,7 +31,8 @@ def filter_and_show(image, h, l, s, sobel_mag, sobel_angle):
     combinedPiture[:,:,2] = 0
         
     cv2.imshow(filter_window_name, combinedPiture )
-
+    cv2.waitKey(0)
+    
 def hls_h_min_ch_trackbar(val):
     global h_ch
     h_ch[0] = val
