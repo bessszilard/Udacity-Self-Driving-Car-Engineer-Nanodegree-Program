@@ -20,8 +20,13 @@ distCoeffs = np.array([(-0.23185386, -0.11832054, -0.00116561,  0.00023902,  0.1
 
 # Sobel thresholds
 # 54       255     -1.4486232791552935     1.3089969389957472
-sobelMag = np.array([54, 255])
+# sobelMag = np.array([54, 255])
+# sobelAngMin = np.array([-1.4486232791552935, 1.3089969389957472])
+
+sobelMag = np.array([19, 255])
 sobelAngMin = np.array([-1.4486232791552935, 1.3089969389957472])
+# [21 105]
+
 
 # HLS thresholds
 h_ch = [  3,  31] 
@@ -32,8 +37,37 @@ images_file_names = glob.glob('test_images/test*.jpg')
 
 rows = 2
 cols = 3
+ksize = 5 # Choose a larger odd number to smooth gradient measurements
 
-single_image = mpimg.imread('test_images/straight_lines2.jpg')
+single_image = mpimg.imread('test_images/test1.jpg') # straight_lines1.jpg')
+
+
+def process_image(input_image):
+    image = np.copy(input_image)
+    image = get_undistorted_image(image, cameraMx, distCoeffs)
+    # image = draw_region_of_interest(image, roiTopLen, rioBottomLen, roiOffset)
+    image = get_birds_eye_img(image)
+    image = cv2.blur(image, (5,5))
+    sobelRes = sobel_mag_dir_treshold(image, sobel_kernel=ksize, mag_thresh=sobelMag, dir_thresh=sobelAngMin)
+    hlsRes = hls_convert_and_filter(image, h_ch, l_ch, s_ch)
+
+    openingker = np.ones((6,6),np.uint8)
+    closingker = np.ones((10,10),np.uint8)
+    sobelRes = cv2.morphologyEx(sobelRes, cv2.MORPH_OPEN, openingker)
+    sobelRes = cv2.morphologyEx(sobelRes, cv2.MORPH_CLOSE, closingker)
+
+    combinedPiture = np.zeros_like(image)
+    combinedPiture[:,:,0] = hlsRes
+    combinedPiture[:,:,1] = sobelRes
+    combinedPiture[:,:,2] = 0
+    # image = combinedPiture
+
+    # reziedImg = cv2.resize(input_image,(image.shape[0],input_image.shape[1]))
+    image = np.concatenate((image, combinedPiture), axis=1)
+    resizedImg = cv2.resize(image,(image.shape[1], input_image.shape[0]))
+    image = np.concatenate((input_image, resizedImg), axis=1)
+
+    return image
 
 # roiTopLen = 150
 # rioBottomLen = 910
@@ -43,30 +77,29 @@ roiTopLen = 130
 rioBottomLen = 800
 roiOffset = 7
 
-# img = mpimg.imread(images_file_names[0])
-# img = get_undistorted_image(img, cameraMx, distCoeffs)
-# disp_imgRow1 = draw_region_of_interest(img, roiTopLen, rioBottomLen, roiOffset)
+img = mpimg.imread(images_file_names[0])
+disp_imgRow1 = process_image(img)
 
+# mutiple image
+# --------------------------------------------------------------------
 # for i in range(1, 3): # len(images_file_names)):
 #     filename = images_file_names[i]
 #     img = mpimg.imread(filename)
-#     img = get_undistorted_image(img, cameraMx, distCoeffs)
-#     img = draw_region_of_interest(img, roiTopLen, rioBottomLen, roiOffset)
+#     img = process_image(img)
 #     disp_imgRow1 = np.concatenate((disp_imgRow1, img), axis=1)
 
 # img = mpimg.imread(images_file_names[3])
-# img = get_undistorted_image(img, cameraMx, distCoeffs)
-# disp_imgRow2 = draw_region_of_interest(img, roiTopLen, rioBottomLen, roiOffset)
+# disp_imgRow2 = process_image(img)
 # for i in range(4, len(images_file_names)):
 #     filename = images_file_names[i]
 #     img = mpimg.imread(filename)
-#     img = get_undistorted_image(img, cameraMx, distCoeffs)
-#     img = draw_region_of_interest(img, roiTopLen, rioBottomLen, roiOffset)
+#     img = process_image(img)
 #     disp_imgRow2 = np.concatenate((disp_imgRow2, img), axis=1)
 
 # image = np.concatenate((disp_imgRow1, disp_imgRow2), axis=0)
+# --------------------------------------------------------------------
+
 # # image = cv2.blur(image, (5,5))
-# ksize = 5 # Choose a larger odd number to smooth gradient measurements
 
 # # image = np.copy(single_image)
 
@@ -78,15 +111,10 @@ roiOffset = 7
 # combinedPiture[:,:,1] = sobelRes
 # combinedPiture[:,:,2] = 0
 
-def process_image(input_image):
-    image = np.copy(input_image)
-    image = get_undistorted_image(image, cameraMx, distCoeffs)
-    image = draw_region_of_interest(image, roiTopLen, rioBottomLen, roiOffset)
-    image = get_birds_eye_img(image)
-    return image
 
-img = process_image(single_image)
-plt.imshow(img)
+
+image = process_image(single_image)
+plt.imshow(image)
 plt.show()
 
 # adjuct_filter_parameters(image)

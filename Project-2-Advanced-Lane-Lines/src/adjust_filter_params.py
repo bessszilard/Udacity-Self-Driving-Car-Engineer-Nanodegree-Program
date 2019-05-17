@@ -16,20 +16,29 @@ h_ch = np.array( [  3,  31] )
 l_ch = np.array( [  0, 255] )
 s_ch = np.array( [110, 255] )
 
-sobel_mag = np.array([54, 255])
-sobel_ang = np.array([-1.4486232791552935, 1.3089969389957472])
+# sobel_mag = np.array([54, 255])
+# sobel_ang = np.array([-1.4486232791552935, 1.3089969389957472])
+sobel_mag = np.array([20, 255])
+sobel_ang = np.array([-1.18682389, 0.15707963])
 
-def filter_and_show(image, h, l, s, sobel_mag, sobel_angle):
+def filter_and_show(image, h, l, s, sobel_mag, sobel_angle, openingKernel=3):
     low_th = np.array([h[0], l[0], s[0]])
     high_th = np.array([h[1], l[1], s[1]])
     hlsRes   = hls_convert_and_filter(image, h_ch, l_ch, s_ch)
     sobelRes = sobel_mag_dir_treshold(image, sobel_kernel=ksize, 
                                         mag_thresh=sobel_mag, dir_thresh=sobel_angle)
+    openingker = np.ones((6,6),np.uint8)
+    closingker = np.ones((10,10),np.uint8)
+    sobelRes = cv2.morphologyEx(sobelRes, cv2.MORPH_OPEN, openingker)
+    sobelRes = cv2.morphologyEx(sobelRes, cv2.MORPH_CLOSE, closingker)
+
     combinedPiture = np.zeros_like(image)
     combinedPiture[:,:,0] = hlsRes
     combinedPiture[:,:,1] = sobelRes
     combinedPiture[:,:,2] = 0
-        
+    
+    print(sobel_mag, " | ", sobel_angle)
+
     cv2.imshow(filter_window_name, combinedPiture )
     # cv2.waitKey(0)
 
@@ -82,6 +91,13 @@ def on_sobel_ang_max_trackbar(val):
     global sobel_ang
     sobel_ang[1] = np.radians(val - 90)
     filter_and_show(image, h_ch, l_ch, s_ch, sobel_mag, sobel_ang )
+
+def opening_kernel_trackbar(val):
+    global oks
+    #  = val
+    oks = np.ones((val,val),np.uint8)
+
+    filter_and_show(image, h_ch, l_ch, s_ch, sobel_mag, sobel_ang, oks )
 
 # # calculated already with cameraCalibration.py
 # cameraMx = np.array([[1.15660712e+03, 0.00000000e+00, 6.68960302e+02],
@@ -137,6 +153,8 @@ def adjuct_filter_parameters(input_image):
     trackbarAngMinName = "Min angle"
     trackbarAngMaxName = "Max angle"
 
+    trackbarOpenKernelName = "Open Kernel"
+
     cv2.createTrackbar(trackbarHMinName, filter_window_name, 0, 180, hls_h_min_ch_trackbar)
     cv2.createTrackbar(trackbarHMaxName, filter_window_name, 0, 180, hls_h_max_ch_trackbar)
     cv2.createTrackbar(trackbarLMinName, filter_window_name, 0, 255, hls_l_min_ch_trackbar)
@@ -158,4 +176,8 @@ def adjuct_filter_parameters(input_image):
     cv2.setTrackbarPos(trackbarMagMaxName, filter_window_name, sobel_mag[1] )
     cv2.setTrackbarPos(trackbarAngMinName, filter_window_name, int(sobel_ang[0] * 180 / np.pi + 90) )
     cv2.setTrackbarPos(trackbarAngMaxName, filter_window_name, int(sobel_ang[1] * 180 / np.pi + 90) )
+    
+    cv2.createTrackbar(trackbarOpenKernelName, filter_window_name, 0, 35, opening_kernel_trackbar )
+    cv2.setTrackbarPos(trackbarOpenKernelName, filter_window_name, 3)
+
     cv2.waitKey(0)
