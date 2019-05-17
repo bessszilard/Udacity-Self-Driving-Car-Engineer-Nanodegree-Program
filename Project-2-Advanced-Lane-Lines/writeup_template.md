@@ -72,7 +72,13 @@ I to eliminate distortion use the  **camera matrix** and **distortion coefficien
 
 *Figure 3: Normal and Undistorted road image*
 
-#### 2. Image filtering
+#### 2. Get bird's eye view
+
+I generated bird's eye view with the ``get_birds_eye_img()	``. The four corner which is necessary for the transformation I selected with in pyplot's interactive menu. 
+
+
+
+#### 3. Image filtering
 
 I lane line detecting I used the combination of Sobel edge detection and HLS color filtering. I used absolute gradient magnitude and gradient direction for Sobel. I combined the 6 test image into one, and than I created a window, where I can manually adjusted the threshold limits. After the limit tuning, I add the two filters output, the results is *Figure 4* . Green color is the output of the Sobel filter and blue is for HLS filter. These functions are located ```combiningThresholds.py``` file.
 

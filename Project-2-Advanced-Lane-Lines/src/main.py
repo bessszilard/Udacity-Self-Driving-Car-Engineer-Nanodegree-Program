@@ -10,7 +10,7 @@ from moviepy.editor import VideoFileClip
 from cameraCalibration   import get_undistorted_image
 from combiningThresholds import sobel_mag_dir_treshold, hls_convert_and_filter, draw_region_of_interest
 from adjust_filter_params import adjuct_filter_parameters, filter_and_show
-from gemoetries import get_birds_eye_img, fit_polynomial, get_car_perspective
+from gemoetries import get_birds_eye_img, fit_polynomial, get_car_perspective, get_path_img
 
 # calculated already with cameraCalibration.py
 cameraMx = np.array([[1.15660712e+03, 0.00000000e+00, 6.68960302e+02],
@@ -33,19 +33,21 @@ h_ch = [  3,  31]
 l_ch = [  0, 255]
 s_ch = [110, 255]
 
-images_file_names = glob.glob('test_images/test*.jpg')
+# images_file_names = glob.glob('test_images/test*.jpg')
+images_file_names = glob.glob('video_images/vlcsnap-0000*.jpg')
 
 rows = 2
 cols = 3
 ksize = 5 # Choose a larger odd number to smooth gradient measurements
 
-single_image = mpimg.imread('test_images/test1.jpg') # straight_lines1.jpg')
+# single_image = mpimg.imread('test_images/straight_lines1.jpg')
+single_image = mpimg.imread('video_images/vlcsnap-00001.jpg')
 
 
 def process_image(input_image):
     image = np.copy(input_image)
     image = get_undistorted_image(image, cameraMx, distCoeffs)
-    # image = draw_region_of_interest(image, roiTopLen, rioBottomLen, roiOffset)
+    # image = draw_region_of_interest(image)
     image = get_birds_eye_img(image)
     image = cv2.blur(image, (5,5))
     sobelRes = sobel_mag_dir_treshold(image, sobel_kernel=ksize, mag_thresh=sobelMag, dir_thresh=sobelAngMin)
@@ -57,22 +59,37 @@ def process_image(input_image):
     sobelRes = cv2.morphologyEx(sobelRes, cv2.MORPH_CLOSE, closingker)
 
     binary_warped = sobelRes + hlsRes
-    # combinedPiture = np.zeros_like(image)
-    # combinedPiture[:,:,0] = hlsRes
-    # combinedPiture[:,:,1] = sobelRes
-    # combinedPiture[:,:,2] = 0
-    # # image = combinedPiture
+    # # # combinedPiture = np.zeros_like(image)
+    # # # combinedPiture[:,:,0] = hlsRes
+    # # # combinedPiture[:,:,1] = sobelRes
+    # # # combinedPiture[:,:,2] = 0
+    # # # # image = combinedPiture
 
-    binary_warped = np.copy(fit_polynomial(binary_warped))
+    # binary_warped = np.copy(fit_polynomial(binary_warped))
+    binary_warped = np.copy(get_path_img(binary_warped))
     image = get_car_perspective(binary_warped, input_image)
-    image = cv2.addWeighted(input_image, 1, image, 1, 0)
+    image = np.copy(input_image)
+
+    hls = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
+    l_ch2 = hls[:, :, 1 ]
+    s_ch2 = hls[:, :, 2 ]
+    # l_ch2_avg = l_ch2.mean()
+    
+    # l_ch2[ (l_ch2 < l_ch2.mean()) | ( s_ch2 < s_ch2.mean()) ] = 0
+    image[ (l_ch2 < l_ch2.mean()) | ( s_ch2 < s_ch2.mean()),: ] = 0
+    
+    # l_ch2[ ( l_ch2 < l_ch2.mean()) ] = 0
+    
+    # image = l_ch2
+
+    # image = cv2.addWeighted(input_image, 1, image, 1, 0)
 
     # combinedPiture = binary_warped
     # image = combinedPiture
 
     # reziedImg = cv2.resize(input_image,(image.shape[0],input_image.shape[1]))
-    # # image = np.concatenate((combinedPiture, image), axis=1)
-    # # resizedImg = cv2.resize(combinedPiture,(image.shape[1], input_image.shape[0]))
+    # image = np.concatenate((input_image, image), axis=0)
+    # resizedImg = cv2.resize(combinedPiture,(image.shape[1], input_image.shape[0]))
     # image = np.concatenate((combinedPiture, reziedImg), axis=1)
 
     return image
@@ -90,21 +107,21 @@ disp_imgRow1 = process_image(img)
 
 # mutiple image
 # --------------------------------------------------------------------
-# for i in range(1, 3): # len(images_file_names)):
-#     filename = images_file_names[i]
-#     img = mpimg.imread(filename)
-#     img = process_image(img)
-#     disp_imgRow1 = np.concatenate((disp_imgRow1, img), axis=1)
+for i in range(1, 3): # len(images_file_names)):
+    filename = images_file_names[i]
+    img = mpimg.imread(filename)
+    img = process_image(img)
+    disp_imgRow1 = np.concatenate((disp_imgRow1, img), axis=1)
 
-# img = mpimg.imread(images_file_names[3])
-# disp_imgRow2 = process_image(img)
-# for i in range(4, len(images_file_names)):
-#     filename = images_file_names[i]
-#     img = mpimg.imread(filename)
-#     img = process_image(img)
-#     disp_imgRow2 = np.concatenate((disp_imgRow2, img), axis=1)
+img = mpimg.imread(images_file_names[3])
+disp_imgRow2 = process_image(img)
+for i in range(4, len(images_file_names)):
+    filename = images_file_names[i]
+    img = mpimg.imread(filename)
+    img = process_image(img)
+    disp_imgRow2 = np.concatenate((disp_imgRow2, img), axis=1)
 
-# image = np.concatenate((disp_imgRow1, disp_imgRow2), axis=0)
+image = np.concatenate((disp_imgRow1, disp_imgRow2), axis=0)
 # --------------------------------------------------------------------
 
 # # image = cv2.blur(image, (5,5))
@@ -119,19 +136,24 @@ disp_imgRow1 = process_image(img)
 # combinedPiture[:,:,1] = sobelRes
 # combinedPiture[:,:,2] = 0
 
-image = process_image(single_image)
-plt.imshow(image)
-plt.show()
-
+# plt.imshow(image)
+# plt.show()
+# image = process_image(single_image)
+# plt.imshow(image)
+# plt.show()
+ 
 # adjuct_filter_parameters(image)
 
 # f, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 20))
 # ax1.set_title("Normal image")
 # ax1.imshow(single_image)
-# ax2.set_title("Undistorted image")
-# ax2.imshow(img)
+# ax2.set_title("Bird's eye view")
+# ax2.imshow(image)
+# plt.show()
 
-# white_output = 'test_videos_output/project_video.mp4'
-# clip1 = VideoFileClip("project_video.mp4")
-# white_clip = clip1.fl_image(process_image) #NOTE: this function expects color images!!
-# white_clip.write_videofile(white_output, audio=False)
+# videoName = 'project_video.mp4'
+videoName = 'challenge_video.mp4'
+white_output = 'test_videos_output/' + videoName
+clip1 = VideoFileClip(videoName)
+white_clip = clip1.fl_image(process_image) #NOTE: this function expects color images!!
+white_clip.write_videofile(white_output, audio=False)

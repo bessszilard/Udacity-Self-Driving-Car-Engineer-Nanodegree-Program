@@ -153,7 +153,7 @@ def adjuct_filter_parameters(input_image):
     trackbarAngMinName = "Min angle"
     trackbarAngMaxName = "Max angle"
 
-    trackbarOpenKernelName = "Open Kernel"
+    trackbarOpenKernelName = "Open/Close Kernel"
 
     cv2.createTrackbar(trackbarHMinName, filter_window_name, 0, 180, hls_h_min_ch_trackbar)
     cv2.createTrackbar(trackbarHMaxName, filter_window_name, 0, 180, hls_h_max_ch_trackbar)

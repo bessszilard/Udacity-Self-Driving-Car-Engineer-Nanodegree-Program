@@ -60,6 +60,7 @@ def dir_threshold(image, sobel_kernel=3, thresh=(0, np.pi/2)):
 
 def sobel_mag_dir_treshold(image, sobel_kernel=3, mag_thresh=(0, 255), dir_thresh=(0, np.pi/2)):
     gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    grat = cv2.equalizeHist(gray)
     sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize = sobel_kernel)
     sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize = sobel_kernel)
     
@@ -105,18 +106,19 @@ def region_of_interest(img, vertices):
     masked_image = cv2.bitwise_and(img, mask)
     return masked_image
     
-def draw_region_of_interest(input_image, top_length, bottom_length, vert_offset):
+def draw_region_of_interest(input_image):
     image = np.copy(input_image)
     img_cols = image.shape[1]
     img_rows = image.shape[0]
 
-    roiTop = img_rows / 1.6
-    roiBottom = img_rows - 50
-    roiTopLen = top_length 
-    roiBottomLen = bottom_length
-    vertices = np.array([[(img_cols / 2 - roiBottomLen / 2 + vert_offset , roiBottom),      # left_bot
-                        (img_cols / 2 - roiTopLen / 2      + vert_offset , roiTop),  # left_top
-                        (img_cols / 2 + roiTopLen / 2      + vert_offset , roiTop),  # right_top
-                        (img_cols / 2 + roiBottomLen / 2   + vert_offset , roiBottom)]], dtype=np.int32)
+    top_left = (585, 453)
+    top_right = (697, 453)
+    bottom_left = (270, 668)
+    bottom_right = (1060, 668) 
+    vertices = np.array([[bottom_left,  # left_bot
+                          top_left,     # right_top
+                          top_right,    # left_top
+                          bottom_right]], dtype=np.int32)
+    # vertices = np.float32([[top_left, top_right, bottom_left, bottom_right]], dtype=np.int32)
     
     return cv2.polylines(image, vertices,  True, (255,0,0), 5)
