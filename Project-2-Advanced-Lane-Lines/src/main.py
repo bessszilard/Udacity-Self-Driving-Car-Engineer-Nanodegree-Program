@@ -10,7 +10,7 @@ from moviepy.editor import VideoFileClip
 from cameraCalibration   import get_undistorted_image
 from combiningThresholds import sobel_mag_dir_treshold, hls_convert_and_filter, draw_region_of_interest
 from adjust_filter_params import adjuct_filter_parameters, filter_and_show
-from gemoetries import get_birds_eye_img
+from gemoetries import get_birds_eye_img, fit_polynomial, get_car_perspective
 
 # calculated already with cameraCalibration.py
 cameraMx = np.array([[1.15660712e+03, 0.00000000e+00, 6.68960302e+02],
@@ -56,16 +56,24 @@ def process_image(input_image):
     sobelRes = cv2.morphologyEx(sobelRes, cv2.MORPH_OPEN, openingker)
     sobelRes = cv2.morphologyEx(sobelRes, cv2.MORPH_CLOSE, closingker)
 
-    combinedPiture = np.zeros_like(image)
-    combinedPiture[:,:,0] = hlsRes
-    combinedPiture[:,:,1] = sobelRes
-    combinedPiture[:,:,2] = 0
+    binary_warped = sobelRes + hlsRes
+    # combinedPiture = np.zeros_like(image)
+    # combinedPiture[:,:,0] = hlsRes
+    # combinedPiture[:,:,1] = sobelRes
+    # combinedPiture[:,:,2] = 0
+    # # image = combinedPiture
+
+    binary_warped = np.copy(fit_polynomial(binary_warped))
+    image = get_car_perspective(binary_warped, input_image)
+    image = cv2.addWeighted(input_image, 1, image, 1, 0)
+
+    # combinedPiture = binary_warped
     # image = combinedPiture
 
     # reziedImg = cv2.resize(input_image,(image.shape[0],input_image.shape[1]))
-    image = np.concatenate((image, combinedPiture), axis=1)
-    resizedImg = cv2.resize(image,(image.shape[1], input_image.shape[0]))
-    image = np.concatenate((input_image, resizedImg), axis=1)
+    # # image = np.concatenate((combinedPiture, image), axis=1)
+    # # resizedImg = cv2.resize(combinedPiture,(image.shape[1], input_image.shape[0]))
+    # image = np.concatenate((combinedPiture, reziedImg), axis=1)
 
     return image
 
@@ -111,18 +119,11 @@ disp_imgRow1 = process_image(img)
 # combinedPiture[:,:,1] = sobelRes
 # combinedPiture[:,:,2] = 0
 
-
-
 image = process_image(single_image)
 plt.imshow(image)
 plt.show()
 
 # adjuct_filter_parameters(image)
-
-
-# img = get_undistorted_image(single_image, cameraMx, distCoeffs)
-# # img = np.concatenate((single_image, img), axis=1)
-
 
 # f, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 20))
 # ax1.set_title("Normal image")
@@ -130,18 +131,6 @@ plt.show()
 # ax2.set_title("Undistorted image")
 # ax2.imshow(img)
 
-
-
-# img = cv2.addWeighted(single_image, alpha, roi, 1 - alpha, 0, img)
-
-# filter_and_show(single_image, h_ch, l_ch, s_ch, sobelMag, sobelAngMin )
-# plt.imshow(image)
-# plt.imshow(hlsRes)
-
-
-
-
-# # plt.show()
 # white_output = 'test_videos_output/project_video.mp4'
 # clip1 = VideoFileClip("project_video.mp4")
 # white_clip = clip1.fl_image(process_image) #NOTE: this function expects color images!!
