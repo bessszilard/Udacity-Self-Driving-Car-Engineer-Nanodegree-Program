@@ -10,7 +10,7 @@ from moviepy.editor import VideoFileClip
 from cameraCalibration   import get_undistorted_image
 from combiningThresholds import sobel_mag_dir_treshold, hls_convert_and_filter, draw_region_of_interest
 from adjust_filter_params import adjuct_filter_parameters, filter_and_show
-from gemoetries import get_birds_eye_img, fit_polynomial, get_car_perspective, get_path_img
+from gemoetries import get_birds_eye_img, fit_polynomial, get_car_perspective, get_path_img, draw_lanes
 
 # calculated already with cameraCalibration.py
 cameraMx = np.array([[1.15660712e+03, 0.00000000e+00, 6.68960302e+02],
@@ -33,15 +33,15 @@ h_ch = [  3,  31]
 l_ch = [  0, 255]
 s_ch = [110, 255]
 
-# images_file_names = glob.glob('test_images/test*.jpg')
-images_file_names = glob.glob('video_images/vlcsnap-0000*.jpg')
+images_file_names = glob.glob('test_images/test*.jpg')
+# images_file_names = glob.glob('video_images/vlcsnap-0000*.jpg')
 
 rows = 2
 cols = 3
 ksize = 5 # Choose a larger odd number to smooth gradient measurements
 
 # single_image = mpimg.imread('test_images/straight_lines1.jpg')
-single_image = mpimg.imread('video_images/vlcsnap-00001.jpg')
+# single_image = mpimg.imread('video_images/vlcsnap-00001.jpg')
 
 def alphaBetaAuto_correction(img):
     inputRange = np.amax(img) - np.amin(img)
@@ -50,21 +50,27 @@ def alphaBetaAuto_correction(img):
     beta = - alpha * np.amin(img)
     return (img * alpha + beta).astype("uint8")
 
+
+def addImages (image1, image2):
+    image_out = image1 + image2
+    image_out [ 255 < image_out ] = 255
+    return image_out
+
 def process_image(input_image):
     image = np.copy(input_image)
     image = get_undistorted_image(image, cameraMx, distCoeffs)
     # image = draw_region_of_interest(image)
-    # image = get_birds_eye_img(image)
+    image = get_birds_eye_img(image)
     image = cv2.blur(image, (5,5))
     sobelRes = sobel_mag_dir_treshold(image, sobel_kernel=ksize, mag_thresh=sobelMag, dir_thresh=sobelAngMin)
     hlsRes = hls_convert_and_filter(image, h_ch, l_ch, s_ch)
 
-    # openingker = np.ones((6,6),np.uint8)
-    # closingker = np.ones((10,10),np.uint8)
-    # sobelRes = cv2.morphologyEx(sobelRes, cv2.MORPH_OPEN, openingker)
-    # sobelRes = cv2.morphologyEx(sobelRes, cv2.MORPH_CLOSE, closingker)
+    openingker = np.ones((6,6),np.uint8)
+    closingker = np.ones((10,10),np.uint8)
+    sobelRes = cv2.morphologyEx(sobelRes, cv2.MORPH_OPEN, openingker)
+    sobelRes = cv2.morphologyEx(sobelRes, cv2.MORPH_CLOSE, closingker)
 
-    # binary_warped = sobelRes + hlsRes
+    binary_warped = sobelRes + hlsRes
     # # # combinedPiture = np.zeros_like(image)
     # # # combinedPiture[:,:,0] = hlsRes
     # # # combinedPiture[:,:,1] = sobelRes
@@ -73,36 +79,37 @@ def process_image(input_image):
 
     # binary_warped = np.copy(fit_polynomial(binary_warped))
     # binary_warped = np.copy(get_path_img(binary_warped))
-    # image = get_car_perspective(binary_warped, input_image)
+    image = draw_lanes(binary_warped, input_image)
+    image = get_car_perspective(image, input_image)
 
-    hls = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
-    l_ch2 = hls[:, :, 1 ]
-    s_ch2 = hls[:, :, 2 ]
+    # hls = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
+    # l_ch2 = hls[:, :, 1 ]
+    # s_ch2 = hls[:, :, 2 ]
+    # l_ch2 = alphaBetaAuto_correction(l_ch2)
+    # s_ch2 = alphaBetaAuto_correction(s_ch2)
 
     # l_ch2_avg = l_ch2.mean()
-    yellowLane = np.copy(input_image)
-    yellowLane[ (l_ch2 < l_ch2.mean()) | ( s_ch2 < s_ch2.mean()),: ] = 0
+    # yellowLane = np.copy(image)
+    # yellowLane[ (l_ch2 < l_ch2.mean()) | ( s_ch2 < s_ch2.mean()),: ] = 0
+    # yellowLane[ (l_ch2 * 0.8 < l_ch2.mean()) | (s_ch2 * 3.5 < s_ch2.mean()), : ] = 0
     # yellowLane [ l_ch2 == 0, : ] = 0
 
-    # image[ (l_ch2 < l_ch2.mean()) | ( s_ch2 < s_ch2.mean()),: ] = 0
-    # l_ch2 = cv2.cv2.equalizeHist(l_ch2)
+    # image[ (l_ch2 < l_ch2[ int(l_ch2.shape[0] / 2), :].mean()) | ( s_ch2 * 2 < s_ch2[ int(l_ch2.shape[0] / 2), :].mean()),: ] = 0
 
-    l_ch2 = alphaBetaAuto_correction(l_ch2)
     # image[ (l_ch2  < l_ch2.mean() + 80) ] = 0
-    lightSobel = sobel_mag_dir_treshold(l_ch2, sobel_kernel=ksize, mag_thresh=sobelMag, dir_thresh=sobelAngMin)
-    lightSobel[(l_ch2  < l_ch2.mean()) | (s_ch2 * 4 < s_ch2.mean())] = 0
+    # lightSobel = sobel_mag_dir_treshold(l_ch2, sobel_kernel=ksize, mag_thresh=sobelMag, dir_thresh=sobelAngMin)
+    # lightSobel[(l_ch2  < l_ch2.mean()) | (s_ch2 * 3 < s_ch2.mean())] = 0
 
-    whiteLane = np.copy(input_image)
+    # whiteLane = np.copy(image)
     # print( l_ch2.mean() )
-    whiteLane[ lightSobel == 0,: ] = 0
+    # whiteLane[ lightSobel == 0, : ] = 0
 
-    image = np.uint8( yellowLane + whiteLane )
+    # image = yellowLane #addImages(l_ch2, s_ch2) # np.uint8( l_ch2 + s_ch2 )#  yellowLane ) # + whiteLane )
 
     # l_ch2[ ( l_ch2 < l_ch2.mean()) ] = 0
     
     # image = l_ch2
-
-    # image = cv2.addWeighted(input_image, 1, image, 1, 0)
+    image = cv2.addWeighted(input_image, 1, image, 1, 0)
 
     # combinedPiture = binary_warped
     # image = combinedPiture
@@ -172,9 +179,9 @@ plt.show()
 # plt.show()
 
 # videoName = 'project_video.mp4'
-videoName = 'challenge_video.mp4'
-# videoName = 'harder_challenge_video.mp4'
-white_output = 'test_videos_output/' + videoName
-clip1 = VideoFileClip(videoName)
-white_clip = clip1.fl_image(process_image) #NOTE: this function expects color images!!
-white_clip.write_videofile(white_output, audio=False)
+# # videoName = 'challenge_video.mp4'
+# # videoName = 'harder_challenge_video.mp4'
+# white_output = 'test_videos_output/' + videoName
+# clip1 = VideoFileClip(videoName)
+# white_clip = clip1.fl_image(process_image) #NOTE: this function expects color images!!
+# white_clip.write_videofile(white_output, audio=False)

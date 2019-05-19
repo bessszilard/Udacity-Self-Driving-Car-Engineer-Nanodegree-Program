@@ -5,6 +5,13 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
+def alphaBetaAuto_correction(img):
+    inputRange = np.amax(img) - np.amin(img)
+    wantedrange = 255.0
+    alpha = wantedrange / inputRange
+    beta = - alpha * np.amin(img)
+    return (img * alpha + beta).astype("uint8")
+
 def abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(0, 255)):
     # Calculate directional gradient
     # Apply threshold
@@ -59,8 +66,10 @@ def dir_threshold(image, sobel_kernel=3, thresh=(0, np.pi/2)):
     return dir_binary
 
 def sobel_mag_dir_treshold(image, sobel_kernel=3, mag_thresh=(0, 255), dir_thresh=(0, np.pi/2)):
+    # gray = image
     gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    grat = cv2.equalizeHist(gray)
+    gray = alphaBetaAuto_correction(gray)
+    # grat = cv2.equalizeHist(gray)
     sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize = sobel_kernel)
     sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize = sobel_kernel)
     
