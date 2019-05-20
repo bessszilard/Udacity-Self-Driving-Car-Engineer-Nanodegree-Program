@@ -80,7 +80,7 @@ def process_image(input_image):
     # binary_warped = np.copy(fit_polynomial(binary_warped))
     # binary_warped = np.copy(get_path_img(binary_warped))
     image = draw_lanes(binary_warped, input_image)
-    image = get_car_perspective(image, input_image)
+    # image = get_car_perspective(image, input_image)
 
     # hls = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
     # l_ch2 = hls[:, :, 1 ]

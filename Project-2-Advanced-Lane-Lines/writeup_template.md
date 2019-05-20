@@ -76,23 +76,15 @@ I to eliminate distortion use the  **camera matrix** and **distortion coefficien
 
 I generated bird's eye view with the ``get_birds_eye_img()	``. The four corner which is necessary for the transformation I selected with in pyplot's interactive menu. 
 
-
+![Bird's eye veiew](writeup_images\birds_eye.jpg)
 
 #### 3. Image filtering
 
-I lane line detecting I used the combination of Sobel edge detection and HLS color filtering. I used absolute gradient magnitude and gradient direction for Sobel. I combined the 6 test image into one, and than I created a window, where I can manually adjusted the threshold limits. After the limit tuning, I add the two filters output, the results is *Figure 4* . Green color is the output of the Sobel filter and blue is for HLS filter. These functions are located ```combiningThresholds.py``` file.
+For a first step, I blurred the image with a 5x5 kernel. Secondly, for filtering I used the combination of Sobel edge detection and HLS color filtering. I used absolute gradient magnitude and gradient direction for Sobel. I combined the 6 test image into one, and than I created a window, where I can manually adjusted the threshold limits. After the limit tuning, I add the two filters output, the results is *Figure 4* . Green color is the output of the Sobel filter and blue is for HLS filter. These functions are located ```combiningThresholds.py``` file. To reduce noise I used open morphological operator for reduce noise, and close connect remained surface.
 
-![Sobel and HLS](writeup_images\cobined_sobel_HLS_filt_trackbars.jpg)
+![Sobel and HLS birds eye](writeup_images\birds_eye_filtered.jpg)
 
 *Figure 4. Results of Sobel and HLS filtering for the combined test pictures filter*
-
-
-
-
-
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
-
-![alt text][image3]
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
@@ -123,6 +115,8 @@ This resulted in the following source and destination points:
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
 ![alt text][image4]
+
+
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 

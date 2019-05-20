@@ -5,9 +5,12 @@ import numpy as np
 import cv2
 
 def get_birds_eye_img(input_image):
+    '''
+    Transform input image in to bird's eye view. Pixels calculated with plt.show 
+    interactive window coordinates.
+    '''
     image = np.copy(input_image)
     image_size = (image.shape[0], image.shape[1])
-
     top_left = (585, 453)
     top_right = (697, 453)
     bottom_left = (270, 668)
@@ -27,6 +30,10 @@ def get_birds_eye_img(input_image):
     return warped
 
 def get_car_perspective(input_image, desiredImage):
+    '''
+    Transform bird's eye to car perspective. This is the inverse function of 
+    get_birds_eye_img
+    '''
     image = np.copy(input_image)
     image_size = (image.shape[1], image.shape[0])
     desired_size = (desiredImage.shape[1], desiredImage.shape[0]) 
@@ -49,11 +56,14 @@ def get_car_perspective(input_image, desiredImage):
     warped = cv2.warpPerspective(image, M, desired_size, flags=cv2.INTER_LINEAR)
     return warped
 
-def hist(img):
-    histogram = np.sum(img[img.shape[0]//2:, :], axis=0)  
-    return histogram
+# def hist(img):
+#     histogram = np.sum(img[img.shape[0]//2:, :], axis=0)  
+#     return histogram
 
 def find_lane_pixels(binary_warped):
+    '''
+    Returns the left and the right second degree polynomial. 
+    '''
     # Take a histogram of the bottom half of the image
     histogram = np.sum(binary_warped[binary_warped.shape[0]//2:,:], axis=0)
     # Create an output image to draw on and visualize the result
@@ -91,7 +101,7 @@ def find_lane_pixels(binary_warped):
         # Identify window boundaries in x and y (and right and left)
         win_y_low = binary_warped.shape[0] - (window+1)*window_height
         win_y_high = binary_warped.shape[0] - window*window_height
-        ### TO-DO: Find the four below boundaries of the window ###
+        
         win_xleft_low =  leftx_current   - int(margin / 2 )  # Update this
         win_xleft_high = leftx_current   + int(margin / 2 )  # Update this
         win_xright_low = rightx_current  - int(margin / 2 )  # Update this
@@ -135,6 +145,9 @@ def find_lane_pixels(binary_warped):
     return leftx, lefty, rightx, righty, out_img
 
 def fit_polynomial(binary_warped):
+    '''
+    Fits the second degree polynomial on the lanes, and draws in the picture
+    '''
     # Find our lane pixels first
     leftx, lefty, rightx, righty, out_img = find_lane_pixels(binary_warped)
 
@@ -178,6 +191,10 @@ def fit_polynomial(binary_warped):
 
 
 def get_path_img(binary_warped):
+    '''
+    Fits the second degree polynomial on the lanes, and in the picture 
+    connect them with a polygon.
+    '''
     # Find our lane pixels first
     leftx, lefty, rightx, righty, out_img = find_lane_pixels(binary_warped)
 
@@ -214,15 +231,15 @@ def get_path_img(binary_warped):
 
     window_img = np.zeros_like( out_img )
     # Draw the lane onto the warped blank image
-    # cv2.polylines(window_img, np.int32([left_line]), False, (255, 255, 0), 10 )
-    # cv2.polylines(window_img, np.int32([right_line]), False, (255, 0, 255), 10 )
     cv2.fillPoly(window_img, np.int_([fil_poly_line_pts]), (0, 255, 0))
-    # cv2.fillPoly(window_img, np.int_([right_line]), (0, 255, 0))
     out_img = window_img # cv2.addWeighted(out_img, 1, window_img, 0.3, 0)
 
     return out_img
 
 def get_poly_pixels_form_coefs( leftx, lefty, rightx, righty, binary_warped):
+    '''
+    
+    '''
     # Fit a second order polynomial to each using `np.polyfit`
     left_fit = np.polyfit(lefty, leftx, 2)
     right_fit = np.polyfit(righty, rightx, 2)
@@ -238,9 +255,12 @@ def get_poly_pixels_form_coefs( leftx, lefty, rightx, righty, binary_warped):
         left_fitx = 1*ploty**2 + 1*ploty
         right_fitx = 1*ploty**2 + 1*ploty
 
-    return left_fitx, right_fitx, ploty
+    return left_fit, right_fit, left_fitx, right_fitx, ploty
 
 def get_radious_from_poly(A, B, y):
+    '''
+    Returns the radius of the approximated circle. 
+    '''
     return (1 + (2 * A * y + B) ** 2) ** (3/2)/ ( 2 * A )
 
 def measure_curvature_real(left_fitx, right_fitx, ploty):
@@ -255,34 +275,46 @@ def measure_curvature_real(left_fitx, right_fitx, ploty):
     # We'll choose the maximum y-value, corresponding to the bottom of the image
     y_eval = np.max(ploty)
     
-    ##### TO-DO: Implement the calculation of R_curve (radius of curvature) #####
-    left_curverad  = get_radious_from_poly(left_fitx[0],  left_fitx[1],  y_eval)  ## Implement the calculation of the left line here
-    right_curverad = get_radious_from_poly(right_fitx[0], right_fitx[1], y_eval)  ## Implement the calculation of the right line here
+    left_curverad  = get_radious_from_poly(left_fitx[0],  left_fitx[1],  y_eval)  ## Calculation of the left line here
+    right_curverad = get_radious_from_poly(right_fitx[0], right_fitx[1], y_eval)  ## Calculation of the right line here
     return left_curverad, right_curverad
 
-def draw_poly_pixels_curve_dia(left_fitx, right_fitx, ploty, out_img, input_image):
+def draw_poly_pixels_blank_img(left_fitx, right_fitx, ploty, input_image):
+    '''
+    Creates an input_image sized blank image, and draws a the results of the polynomials.  
+    '''
+    out_img = np.zeros((input_image.shape[1], input_image.shape[0], 3), dtype=np.uint8)
     left_line = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
     right_line_flipped = np.array([np.flipud(np.transpose(np.vstack([right_fitx, ploty])))])
     fil_poly_line_pts = np.hstack((left_line, right_line_flipped))
 
-    # window_img = np.zeros_like( out_img )
-    # Draw the lane onto the warped blank image
     cv2.fillPoly(out_img, np.int_([fil_poly_line_pts]), (0, 255, 0))
-    
-    # out_img = get_car_perspective(out_img, input_image)
+    return out_img
 
+def write_radius( left_fitx, right_fitx, ploty, out_img ):
+    '''
+    Calculates and writes the culviture's radious on the given image
+    '''
     left_curverad, right_curverad = measure_curvature_real(left_fitx, right_fitx, ploty)
-
+    
+    image_text = "curve %4.3f | offset %4d" % ((np.abs(left_curverad) + np.abs(right_curverad)) / 2, 0)
     font = cv2.FONT_HERSHEY_SIMPLEX
-    cv2.putText(out_img,'ALMAAAAAAAAAAAAAAAAAA', (200,200), font, 4,(255,255,255), 10,cv2.LINE_AA)
-
-    return out_img    
+    cv2.putText(out_img, image_text, (10,50), font, 2,(255,255,255), 5,cv2.LINE_AA)
+    return out_img
 
 def draw_lanes(binary_warped, input_image):
+    '''
+    Main drawing process.
+    '''
     # Find our lane pixels first
     leftx, lefty, rightx, righty, out_img = find_lane_pixels(binary_warped)
-    left_fitx, right_fitx, ploty = get_poly_pixels_form_coefs(leftx, lefty, rightx, righty, out_img)
+    left_fit, right_fit, left_fitx, right_fitx, ploty = get_poly_pixels_form_coefs(leftx, lefty, rightx, righty, out_img)
 
-    lanes_only = np.zeros((input_image.shape[1], input_image.shape[0], 3), dtype=np.uint8)
-    draw_poly_pixels_curve_dia(left_fitx, right_fitx, ploty, lanes_only, input_image)
-    return lanes_only
+    out_image = draw_poly_pixels_blank_img(left_fitx, right_fitx, ploty, input_image)
+    out_image = get_car_perspective(out_image, input_image)
+    write_radius( left_fit, right_fit, ploty, out_image )
+    return out_image
+
+
+# 2886 660
+# 3595 653
