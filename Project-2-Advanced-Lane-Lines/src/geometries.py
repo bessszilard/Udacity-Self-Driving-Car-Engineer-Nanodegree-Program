@@ -286,7 +286,7 @@ def draw_poly_pixels_blank_img(left_fitx, right_fitx, ploty, input_image):
     '''
     Creates an input_image sized blank image, and draws a the results of the polynomials.  
     '''
-    out_img = np.zeros((input_image.shape[1], input_image.shape[0], 3), dtype=np.uint8)
+    out_img = np.zeros((input_image.shape[0], input_image.shape[1], 3), dtype=np.uint8)
     left_line = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
     right_line_flipped = np.array([np.flipud(np.transpose(np.vstack([right_fitx, ploty])))])
     fil_poly_line_pts = np.hstack((left_line, right_line_flipped))
@@ -314,7 +314,7 @@ def draw_lanes(binary_warped, input_image):
     left_fit, right_fit, left_fitx, right_fitx, ploty = get_poly_pixels_form_coefs(leftx, lefty, rightx, righty, out_img)
 
     out_image = draw_poly_pixels_blank_img(left_fitx, right_fitx, ploty, input_image)
-    # out_image = get_car_perspective(out_image, input_image)
+    out_image = get_car_perspective(out_image, input_image)
     write_radius( left_fit, right_fit, ploty, out_image )
     return out_image
 
