@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 import cv2
+from line import Line
+
+left_lane = Line(2)
+right_lane = Line(2)
 
 def get_birds_eye_img(input_image):
     '''
@@ -30,14 +34,13 @@ def get_birds_eye_img(input_image):
     warped = cv2.warpPerspective(image, M, image_size, flags=cv2.INTER_LINEAR)
     return warped
 
-def get_car_perspective(input_image, desiredImage):
+def get_car_perspective(input_image):
     '''
     Transform bird's eye to car perspective. This is the inverse function of 
     get_birds_eye_img
     '''
     image = np.copy(input_image)
     image_size = (image.shape[1], image.shape[0])
-    desired_size = (desiredImage.shape[1], desiredImage.shape[0]) 
     top_left = (585, 453)
     top_right = (697, 453)
     bottom_left = (270, 668)
@@ -54,7 +57,7 @@ def get_car_perspective(input_image, desiredImage):
 
     # inverse
     M = cv2.getPerspectiveTransform(dst, src) 
-    warped = cv2.warpPerspective(image, M, desired_size, flags=cv2.INTER_LINEAR)
+    warped = cv2.warpPerspective(image, M, image_size, flags=cv2.INTER_LINEAR)
     return warped
 
 # def hist(img):
@@ -243,20 +246,30 @@ def get_poly_pixels_form_coefs( leftx, lefty, rightx, righty, binary_warped):
     '''
 
     '''
-    # Fit a second order polynomial to each using `np.polyfit`
-    left_fit = np.polyfit(lefty, leftx, 2)
-    right_fit = np.polyfit(righty, rightx, 2)
-
     # Generate x and y values for plotting
     ploty = np.linspace(0, binary_warped.shape[0]-1, binary_warped.shape[0] )
-    try:
-        left_fitx = left_fit[0]*ploty**2 + left_fit[1]*ploty + left_fit[2]
-        right_fitx = right_fit[0]*ploty**2 + right_fit[1]*ploty + right_fit[2]
-    except TypeError:
-        # Avoids an error if `left` and `right_fit` are still none or incorrect
-        print('The function failed to fit a line!')
-        left_fitx = 1*ploty**2 + 1*ploty
-        right_fitx = 1*ploty**2 + 1*ploty
+    left_fit = right_fit = left_fitx = right_fitx = [0]
+
+    if 0 < len(leftx):
+        # Fit a second order polynomial to each using `np.polyfit`
+        left_fit = np.polyfit(lefty, leftx, 2)
+        
+        try:
+            left_fitx = left_fit[0]*ploty**2 + left_fit[1]*ploty + left_fit[2]
+        except TypeError:
+            # Avoids an error if `left` and `right_fit` are still none or incorrect
+            print('The function failed to fit a line!')
+            left_fitx = 1*ploty**2 + 1*ploty
+
+    if 0 < len(rightx):
+        # Fit a second order polynomial to each using `np.polyfit`
+        right_fit = np.polyfit(righty, rightx, 2)
+        try:
+            right_fitx = right_fit[0]*ploty**2 + right_fit[1]*ploty + right_fit[2]
+        except TypeError:
+            # Avoids an error if `left` and `right_fit` are still none or incorrect
+            print('The function failed to fit a line!')
+            right_fitx = 1*ploty**2 + 1*ploty
 
     return left_fit, right_fit, left_fitx, right_fitx, ploty
 
@@ -311,13 +324,15 @@ def draw_lanes(binary_warped, input_image):
     '''
     # Find our lane pixels first
     leftx, lefty, rightx, righty, out_img = find_lane_pixels(binary_warped)
+
     left_fit, right_fit, left_fitx, right_fitx, ploty = get_poly_pixels_form_coefs(leftx, lefty, rightx, righty, out_img)
+    left_fitx = left_lane.append_x(left_fitx, ploty)
+    right_fitx = right_lane.append_x(right_fitx, ploty)
 
     out_image = draw_poly_pixels_blank_img(left_fitx, right_fitx, ploty, input_image)
-    out_image = get_car_perspective(out_image, input_image)
-    write_radius( left_fit, right_fit, ploty, out_image )
+    out_image = get_car_perspective(out_image)
+    write_radius( left_lane.get_coefs(), right_lane.get_coefs(), ploty, out_image )
     return out_image
-
 
 # 2886 660
 # 3595 653
