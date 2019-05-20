@@ -115,19 +115,19 @@ def region_of_interest(img, vertices):
     masked_image = cv2.bitwise_and(img, mask)
     return masked_image
     
-def draw_region_of_interest(input_image):
+def draw_region_of_interest(input_image, top_left, top_right, bottom_left, bottom_right):
     image = np.copy(input_image)
     img_cols = image.shape[1]
     img_rows = image.shape[0]
 
-    top_left = (585, 453)
-    top_right = (697, 453)
-    bottom_left = (270, 668)
-    bottom_right = (1060, 668) 
+    # top_left = (585, 453)
+    # top_right = (697, 453)
+    # bottom_left = (270, 668)
+    # bottom_right = (1060, 668) 
     vertices = np.array([[bottom_left,  # left_bot
                           top_left,     # right_top
                           top_right,    # left_top
                           bottom_right]], dtype=np.int32)
     # vertices = np.float32([[top_left, top_right, bottom_left, bottom_right]], dtype=np.int32)
     
-    return cv2.polylines(image, vertices,  True, (255,0,0), 5)
+    return cv2.polylines(image, vertices, True, (255, 0, 0), 5)

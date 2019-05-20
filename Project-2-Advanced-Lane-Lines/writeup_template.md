@@ -1,10 +1,4 @@
-## Writeup Template
-
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
-
----
-
-**Advanced Lane Finding Project**
+## Advanced Lane Finding project
 
 The goals / steps of this project are the following:
 
@@ -16,28 +10,6 @@ The goals / steps of this project are the following:
 * Determine the curvature of the lane and vehicle position with respect to center.
 * Warp the detected lane boundaries back onto the original image.
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
-
-[//]: # "Image References"
-
-[image1]: ./examples/undistort_output.png "Undistorted"
-[image2]: ./test_images/test1.jpg "Road Transformed"
-[image3]: ./examples/binary_combo_example.jpg "Binary Example"
-[image4]: ./examples/warped_straight_lines.jpg "Warp Example"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
-[video1]: ./project_video.mp4 "Video"
-
-## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
-
-### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
-
----
-
-### Writeup / README
-
-#### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.  
-
-You're reading it!
 
 ### Camera Calibration
 
@@ -74,7 +46,33 @@ I to eliminate distortion use the  **camera matrix** and **distortion coefficien
 
 #### 2. Get bird's eye view
 
-I generated bird's eye view with the ``get_birds_eye_img()	``. The four corner which is necessary for the transformation I selected with in pyplot's interactive menu. 
+I generated bird's eye view with the ``get_birds_eye_img()	``. In the road image, I selected the four corners using the pyplot interactive menu. 
+
+```python
+top_left = (585, 453)
+top_right = (697, 453)
+bottom_left = (270, 668)
+bottom_right = (1060, 668) 
+```
+
+On the bird's eye view, I used 150 pixel padding on the horizontal axis. 
+
+```python
+top_left = (vert_padding, 0)
+top_right = (image_size[0] - vert_padding, 0)
+bottom_left = (vert_padding, image_size[1])
+bottom_right = (image_size[0] - vert_padding, image_size[1])
+dst = np.float32([[top_left], [top_right], [bottom_left], [bottom_right]])
+```
+
+This resulted in the following source and destination points:
+
+|  Source   | Destination |
+| :-------: | :---------: |
+| 585, 453  |   150, 0    |
+| 697, 453  |   570, 0    |
+| 270, 668  |  150, 1280  |
+| 1060, 668 |  570, 1280  |
 
 ![Bird's eye veiew](writeup_images\birds_eye.jpg)
 
