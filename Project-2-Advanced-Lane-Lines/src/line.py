@@ -30,19 +30,21 @@ class Line():
         # Fit a second order polynomial to each using `np.polyfit`
         
         if len(self.coef_fifo) > 0:
-            lsq_error = np.sum( (self.recent_xfitted - self.current_fit) ** 2 )
-            if lsq_error < np.sum( self.recent_xfitted ** 2 ) * 6:
+            lsq_error = np.sum( (self.recent_xfitted - poly_x) ** 2 )
+            if lsq_error < 3000000: # np.sum( self.recent_xfitted ** 2 ):
                 # valid result
                 if len(poly_x) > 3:
                     current_fit = np.array([np.polyfit(poly_y, poly_x, 2)])
+                    # print(int(lsq_error))
                     if len(current_fit) > 0:
-                        if len(self.coef_fifo) > self.fifo_max_len:
-                            np.delete(self.coef_fifo, 0, 0)
+                        if len(self.coef_fifo) >= self.fifo_max_len:
+                            self.coef_fifo = np.delete(self.coef_fifo, (0), axis=0)
+                            # np.delete(self.coef_fifo, 0)
                         self.coef_fifo = np.concatenate((self.coef_fifo, current_fit), axis=0)
                         avg_coefs = self.coef_fifo.mean(0)
-                        self.recent_xfitted  = avg_coefs[0]*poly_y**2 + avg_coefs[1]*poly_y + avg_coefs[2]
+                        self.recent_xfitted = avg_coefs[0]*poly_y**2 + avg_coefs[1]*poly_y + avg_coefs[2]
             else:
-                print("lsq error is too big: ", lsq_error / np.sum( self.recent_xfitted ** 2 ))
+                print("lsq error is too big: ", lsq_error ) # / np.sum( self.recent_xfitted ** 2 ))
         #fifo is empty
         else:
             current_fit = np.array(np.polyfit(poly_y, poly_x, 2))

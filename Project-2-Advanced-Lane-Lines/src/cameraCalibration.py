@@ -6,26 +6,22 @@ import matplotlib.image as mpimg
 import numpy as np
 import cv2
 
-# %matplotlib inline
+# calculated already with cameraCalibration.py
+cameraMx = np.array([[1.15660712e+03, 0.00000000e+00, 6.68960302e+02],
+                     [0.00000000e+00, 1.15164235e+03, 3.88057002e+02],
+                     [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
+distCoeffs = np.array([(-0.23185386, -0.11832054, -0.00116561,  0.00023902,  0.15356159)])
 
-#reading in an image
-# image = mpimg.imread('calibration1.jpg')
-# image = cv2.imread('camera_cal/calibration1.jpg', cv2.IMREAD_COLOR)
-
-#printing out some stats and plotting
-# print('This image is:', type(image), 'with dimensions:', image.shape)
-# cv2.imshow("Display window", image)  # if you wanted to show a single color channel image called 'gray', for example, call as plt.imshow(gray, cmap='gray')
-
-def get_undistorted_image(img, mtx, distCoeffs):
+def get_undistorted_image(img):
     """
     Based on camera matrix and distortion coefficients 
-    returns an undistored picture of the input image
+    returns an undistored picture of the input image.
     """
-    return cv2.undistort(img, mtx, distCoeffs, None, mtx)
+    return cv2.undistort(img, cameraMx, distCoeffs, None, cameraMx)
 
 def get_calibration_params(images_file_names, nx, ny):
     """
-    Calculates camera matrix and distortion coefficients
+    Calculates camera matrix and distortion coefficients.
     """
     objpoints = [] # 3D points in real world space
     imgpoints = [] # 2D points in image plane
