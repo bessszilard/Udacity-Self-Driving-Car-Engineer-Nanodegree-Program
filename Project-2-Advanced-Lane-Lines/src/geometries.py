@@ -8,7 +8,7 @@ from line import Line
 left_lane = Line(5)
 right_lane = Line(5)
 
-def get_birds_eye_img(input_image):
+def get_perspective(input_image, perspective = 'b'):
     '''
     Transform input image in to bird's eye view. Pixels calculated with plt.show 
     interactive window coordinates.
@@ -29,40 +29,17 @@ def get_birds_eye_img(input_image):
     bottom_left = (vert_padding, image_size[1])
     bottom_right = (image_size[0] - vert_padding, image_size[1])
     dst = np.float32([[top_left], [top_right], [bottom_left], [bottom_right]])
+    
+    # bird's eye view
+    if perspective == 'b':
+        M = cv2.getPerspectiveTransform(src, dst)
+    elif perspective == 'n':
+        M = cv2.getPerspectiveTransform(dst, src)
+    else:
+        raise TypeError(" 'b' or 'n' values are valid perspectives") 
 
-    M = cv2.getPerspectiveTransform(src, dst)
     warped = cv2.warpPerspective(image, M, image_size, flags=cv2.INTER_LINEAR)
     return warped
-
-def get_car_perspective(input_image):
-    '''
-    Transform bird's eye to car perspective. This is the inverse function of 
-    get_birds_eye_img
-    '''
-    image = np.copy(input_image)
-    image_size = (image.shape[1], image.shape[0])
-    top_left = (585, 453)
-    top_right = (697, 453)
-    bottom_left = (270, 668)
-    bottom_right = (1060, 668) 
-
-    src = np.float32([[top_left], [top_right], [bottom_left], [bottom_right]])
-    vert_padding = 150
-
-    top_left = (vert_padding, 0)
-    top_right = (image_size[0] - vert_padding, 0)
-    bottom_left = (vert_padding, image_size[1])
-    bottom_right = (image_size[0] - vert_padding, image_size[1])
-    dst = np.float32([[top_left], [top_right], [bottom_left], [bottom_right]])
-
-    # inverse
-    M = cv2.getPerspectiveTransform(dst, src) 
-    warped = cv2.warpPerspective(image, M, image_size, flags=cv2.INTER_LINEAR)
-    return warped
-
-# def hist(img):
-#     histogram = np.sum(img[img.shape[0]//2:, :], axis=0)  
-#     return histogram
 
 def find_lane_pixels(binary_warped):
     '''
@@ -420,7 +397,7 @@ def write_radius_and_offset(left_fitx, right_fitx, ploty, out_img):
 
 def draw_lanes(binary_warped, input_image):
     '''
-    Main drawing process.
+    Handles the main drawing process.
     '''
     # Find our lane pixels first
     leftx, lefty, rightx, righty, out_img = find_lane_pixels(binary_warped)
@@ -437,7 +414,7 @@ def draw_lanes(binary_warped, input_image):
     cv2.polylines(out_img, np.int32([right_line]), False, (127, 255, 127), 2 )
 
     video_frame = draw_poly_pixels_blank_img(left_fitx, right_fitx, ploty, input_image)
-    video_frame = get_car_perspective(video_frame)
+    video_frame = get_perspective(video_frame, 'n')
     write_radius_and_offset(left_lane.get_coefs(), right_lane.get_coefs(), ploty, video_frame)
     return video_frame, out_img
 
