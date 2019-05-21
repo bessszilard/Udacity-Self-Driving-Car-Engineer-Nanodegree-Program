@@ -59,6 +59,6 @@ class Line():
 
 
     def get_coefs(self):
+        if len(self.coef_fifo) == 0:
+            return [0]
         return  self.coef_fifo.mean(0)
-    # def get_fitted_x():
-    #     return self.recently_fitted_x, self.poly_y
