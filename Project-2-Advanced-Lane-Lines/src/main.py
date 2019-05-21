@@ -10,10 +10,10 @@ from moviepy.editor import VideoFileClip
 from cameraCalibration   import get_undistorted_image
 from combiningThresholds import filter_white_lane, filter_yellow_lane, draw_region_of_interest
 from adjust_filter_params import adjuct_filter_parameters, filter_and_show
-from geometries import get_perspective, fit_polynomial, get_path_img, draw_lanes
+from geometries import get_perspective, draw_lanes, clear_lane_fifos
 
-images_file_names = glob.glob('test_images/test*.jpg')
-# images_file_names = glob.glob('video_images/vlcsnap-0000*.jpg')
+# images_file_names = glob.glob('test_images/test*.jpg')
+images_file_names = glob.glob('video_images/vlcsnap-0000*.jpg')
 
 # single_image = mpimg.imread('test_images/straight_lines1.jpg')
 single_image = mpimg.imread('video_images/vlcsnap-00001.jpg')
@@ -75,20 +75,21 @@ def process_image(input_image):
 # image = np.concatenate((disp_imgRow1, disp_imgRow2), axis=0)
 # # --------------------------------------------------------------------
 
-# plt.imshow(image)
-# plt.show()
+
 image = process_image(single_image)
-# single_image = draw_region_of_interest(single_image, top_left, top_right, bottom_left, bottom_right)
-
-# offset = 150
-# top_left = (offset, 0)
-# top_right = (1280-offset , 0)
-# bottom_left = (offset, 721)
-# bottom_right = (1280-offset, 721) 
-# image = draw_region_of_interest(image, top_left, top_right, bottom_left, bottom_right)
-
 plt.imshow(image)
 plt.show()
+# # single_image = draw_region_of_interest(single_image, top_left, top_right, bottom_left, bottom_right)
+
+# # offset = 150
+# # top_left = (offset, 0)
+# # top_right = (1280-offset , 0)
+# # bottom_left = (offset, 721)
+# # bottom_right = (1280-offset, 721) 
+# # image = draw_region_of_interest(image, top_left, top_right, bottom_left, bottom_right)
+
+# plt.imshow(image)
+# plt.show()
  
 # adjuct_filter_parameters(image)
 
@@ -99,11 +100,12 @@ plt.show()
 # ax2.imshow(image)
 # plt.show()
 frameCounter = 0
+clear_lane_fifos()
 
-# # videoName = 'project_video.mp4'
-# videoName = 'challenge_video.mp4'
-# # videoName = 'harder_challenge_video.mp4'
-# white_output = 'test_videos_output/' + videoName
-# clip1 = VideoFileClip(videoName)
-# white_clip = clip1.fl_image(process_image) #NOTE: this function expects color images!!
-# white_clip.write_videofile(white_output, audio=False)
+# videoName = 'project_video.mp4'
+videoName = 'challenge_video.mp4'
+# videoName = 'harder_challenge_video.mp4'
+white_output = 'test_videos_output/' + videoName
+clip1 = VideoFileClip(videoName)
+white_clip = clip1.fl_image(process_image) #NOTE: this function expects color images!!
+white_clip.write_videofile(white_output, audio=False)
