@@ -8,8 +8,8 @@ import cv2
 
 from moviepy.editor import VideoFileClip
 from cameraCalibration   import get_undistorted_image
-from combiningThresholds import filter_white_lane, filter_yellow_lane, draw_region_of_interest
-from adjust_filter_params import adjuct_filter_parameters, filter_and_show
+from combiningThresholds import filter_white_lane, filter_yellow_lane
+# from adjust_filter_params import adjuct_filter_parameters
 from geometries import get_perspective, draw_lanes, clear_lane_fifos
 
 # images_file_names = glob.glob('test_images/test*.jpg')
@@ -28,6 +28,8 @@ def alphaBetaAuto_correction(img):
 frameCounter = 0
 
 def process_image(input_image):
+    global frameCounter
+
     image = np.copy(input_image)
     image = get_undistorted_image(image)
     # image = draw_region_of_interest(image)
@@ -41,11 +43,7 @@ def process_image(input_image):
     image, road = draw_lanes(binary_warped, input_image) 
     image = cv2.addWeighted(input_image, 1, image, 1, 0)
 
-    # reziedImg = cv2.resize(input_image,(image.shape[0],input_image.shape[1]))
-    # image = np.concatenate((input_image, image), axis=0)
-    # resizedImg = cv2.resize(combinedPiture,(image.shape[1], input_image.shape[0]))
     image = np.concatenate((image, road), axis=1)
-    global frameCounter
     frameCounter += 1
 
     # if frameCounter >= 120:

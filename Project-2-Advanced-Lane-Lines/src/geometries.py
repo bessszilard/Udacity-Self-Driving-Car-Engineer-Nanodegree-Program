@@ -143,7 +143,10 @@ def fit_poly(img_shape, leftx, lefty, rightx, righty):
     
     return left_fitx, right_fitx, ploty
 
-def search_around_poly(binary_warped, left_fit, right_fit ):
+def search_around_poly(binary_warped, left_fit, right_fit):
+    '''
+    Tries to determine next polynomial's pixels based on previous frame result.
+    '''
     # HYPERPARAMETER
     # Choose the width of the margin around the previous polynomial to search
     margin = 100
@@ -181,30 +184,30 @@ def search_around_poly(binary_warped, left_fit, right_fit ):
     # Fit new polynomials
     left_fitx, right_fitx, ploty = fit_poly(binary_warped.shape, leftx, lefty, rightx, righty)
     
-    ## Visualization ##
-    # Create an image to draw on and an image to show the selection window
+    # ## Visualization ##
+    # # Create an image to draw on and an image to show the selection window
     out_img = np.dstack((binary_warped, binary_warped, binary_warped))*255
-    window_img = np.zeros_like(out_img)
-    # Color in left and right line pixels
-    out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]
-    out_img[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 255]
+    # window_img = np.zeros_like(out_img)
+    # # Color in left and right line pixels
+    # out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]
+    # out_img[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 255]
 
-    # Generate a polygon to illustrate the search window area
-    # And recast the x and y points into usable format for cv2.fillPoly()
-    left_line_window1 = np.array([np.transpose(np.vstack([left_fitx-margin, ploty]))])
-    left_line_window2 = np.array([np.flipud(np.transpose(np.vstack([left_fitx+margin, 
-                            ploty])))])
-    left_line_pts = np.hstack((left_line_window1, left_line_window2))
-    right_line_window1 = np.array([np.transpose(np.vstack([right_fitx-margin, ploty]))])
-    right_line_window2 = np.array([np.flipud(np.transpose(np.vstack([right_fitx+margin, 
-                            ploty])))])
-    right_line_pts = np.hstack((right_line_window1, right_line_window2))
+    # # Generate a polygon to illustrate the search window area
+    # # And recast the x and y points into usable format for cv2.fillPoly()
+    # left_line_window1 = np.array([np.transpose(np.vstack([left_fitx-margin, ploty]))])
+    # left_line_window2 = np.array([np.flipud(np.transpose(np.vstack([left_fitx+margin, 
+    #                         ploty])))])
+    # left_line_pts = np.hstack((left_line_window1, left_line_window2))
+    # right_line_window1 = np.array([np.transpose(np.vstack([right_fitx-margin, ploty]))])
+    # right_line_window2 = np.array([np.flipud(np.transpose(np.vstack([right_fitx+margin, 
+    #                         ploty])))])
+    # right_line_pts = np.hstack((right_line_window1, right_line_window2))
 
-    # Draw the lane onto the warped blank image
-    cv2.fillPoly(window_img, np.int_([left_line_pts]), (0,255, 0))
-    cv2.fillPoly(window_img, np.int_([right_line_pts]), (0,255, 0))
-    result = cv2.addWeighted(out_img, 1, window_img, 0.3, 0)
-    # ## End visualization steps ##
+    # # Draw the lane onto the warped blank image
+    # cv2.fillPoly(window_img, np.int_([left_line_pts]), (0,255, 0))
+    # cv2.fillPoly(window_img, np.int_([right_line_pts]), (0,255, 0))
+    # result = cv2.addWeighted(out_img, 1, window_img, 0.3, 0)
+    # # ## End visualization steps ##
 
     return leftx, lefty, rightx, righty, out_img
 
@@ -217,7 +220,7 @@ def get_poly_pixels_form_coefs(leftx, lefty, rightx, righty, binary_warped, out_
     ploty = np.linspace(0, binary_warped.shape[0]-1, binary_warped.shape[0] )
     left_fit = right_fit = left_fitx = right_fitx = [0]
 
-    if 0 < len(leftx):
+    if len(leftx) > 0:
         # Fit a second order polynomial to each using `np.polyfit`
         left_fit = np.polyfit(lefty, leftx, 2)
         
@@ -231,7 +234,7 @@ def get_poly_pixels_form_coefs(leftx, lefty, rightx, righty, binary_warped, out_
         left_line = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
         cv2.polylines(out_img, np.int32([left_line]), False, (255, 255, 0), 10 )
 
-    if 0 < len(rightx):
+    if len(rightx) > 0:
         # Fit a second order polynomial to each using `np.polyfit`
         right_fit = np.polyfit(righty, rightx, 2)
         try:
@@ -250,7 +253,7 @@ def get_radious_from_poly(a, b, y):
     '''
     Returns the radius of the approximated circle. 
     '''
-    return (1 + (2 * a * y + b) ** 2) ** (3/2)/ ( 2 * a )
+    return (1 + (2 * a * y + b) ** 2) ** (3 / 2) / (2 * a)
 
 def measure_curvature_real(__left_lane, __right_lane, ploty):
     '''
@@ -264,11 +267,11 @@ def measure_curvature_real(__left_lane, __right_lane, ploty):
     # We'll choose the maximum y-value, corresponding to the bottom of the image
     y_eval = np.max(ploty)
     
-    left_coefs = __left_lane.get_coefs()
-    right_coefs = __right_lane.get_coefs()
+    left_coefs = __left_lane.get_coefs() * xm_per_pix
+    right_coefs = __right_lane.get_coefs() * xm_per_pix
     
-    left_curverad = get_radious_from_poly(left_coefs[0], left_coefs[1], y_eval)  ## Calculation of the left line here
-    right_curverad = get_radious_from_poly(right_coefs[0], right_coefs[1], y_eval)  ## Calculation of the right line here
+    left_curverad = get_radious_from_poly(left_coefs[0], left_coefs[1], y_eval * ym_per_pix)
+    right_curverad = get_radious_from_poly(right_coefs[0], right_coefs[1], y_eval * ym_per_pix)
     bottom_left_x = __left_lane.get_recent_xfitted()[int(y_eval)]
     bottom_right_x = __right_lane.get_recent_xfitted()[int(y_eval)]
     
@@ -294,7 +297,7 @@ def write_radius_and_offset(__left_lane, __right_lane, ploty, out_img):
     Calculates and writes the culviture's radious on the given image
     '''
     left_curverad, right_curverad, offset = measure_curvature_real(__left_lane, __right_lane, ploty)
-    image_text = "curve %4.1f m | offset %4.1f cm" % ((np.abs(left_curverad) + np.abs(right_curverad)) / 2, offset)
+    image_text = "curve %5.1f m | offset %4.1f cm" % ((np.abs(left_curverad) + np.abs(right_curverad)) / 2, offset)
     cv2.putText(out_img, image_text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 0), 5, cv2.LINE_AA)
     return out_img
 
@@ -307,8 +310,8 @@ def draw_lanes(binary_warped, input_image):
     leftx, lefty, rightx, righty, out_img = search_around_poly(binary_warped, left_lane.get_coefs(), right_lane.get_coefs())
 
     left_fit, right_fit, left_fitx, right_fitx, ploty, out_img = get_poly_pixels_form_coefs(leftx, lefty, rightx, righty, binary_warped, out_img)
-    left_fitx = left_lane.append_x(left_fitx, ploty)
-    right_fitx = right_lane.append_x(right_fitx, ploty)
+    left_fitx = left_lane.append(left_fitx, ploty)
+    right_fitx = right_lane.append(right_fitx, ploty)
 
     left_line = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
     cv2.polylines(out_img, np.int32([left_line]), False, (255, 127, 127), 2 )
