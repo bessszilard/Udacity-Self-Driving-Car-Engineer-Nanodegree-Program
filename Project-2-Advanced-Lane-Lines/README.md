@@ -1,6 +1,6 @@
 ## Advanced Lane Finding project
 
-![cover](writeup_images/cover.jpg)
+![cover](writeup_images/Cover.jpg)
 
 The goals/steps of this project are the following:
 
