@@ -188,7 +188,7 @@ def search_around_poly(binary_warped, left_fit, right_fit):
 
     return leftx, lefty, rightx, righty, out_img
 
-def get_poly_pixels_form_coefs(leftx, lefty, rightx, righty, binary_warped, out_img):
+def fit_poly_on_found_pixels(leftx, lefty, rightx, righty, binary_warped, out_img):
     '''
     Fits the found polynomial to the picture if the polynomial is found.
     After fitting, it plots in the picture.
@@ -292,8 +292,7 @@ def draw_lanes(binary_warped, input_image):
     # Find our lane pixels first
     # leftx, lefty, rightx, righty, out_img = find_lane_pixels(binary_warped)
     leftx, lefty, rightx, righty, out_img = search_around_poly(binary_warped, left_lane.get_coefs(), right_lane.get_coefs())
-
-    left_fitx, right_fitx, ploty, out_img = get_poly_pixels_form_coefs(leftx, lefty, rightx, righty, binary_warped, out_img)
+    left_fitx, right_fitx, ploty, out_img = fit_poly_on_found_pixels(leftx, lefty, rightx, righty, binary_warped, out_img)
     left_fitx = left_lane.append(left_fitx, ploty)
     right_fitx = right_lane.append(right_fitx, ploty)
 

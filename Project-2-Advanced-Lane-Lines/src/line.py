@@ -38,14 +38,13 @@ class Line():
         y_eval = np.max(self.poly_y)
 
         current_curverad = self.__get_radious_from_poly(coefs_m[0], coefs_m[1], y_eval)
-        
         if len(self.radius_fifo) > 0:
             if len(self.radius_fifo) >= self.fifo_max_len:
                 self.radius_fifo = np.delete(self.radius_fifo, (0), axis=0)
             self.radius_fifo = np.concatenate((self.radius_fifo, [current_curverad]), axis=0)
         # fifo is empty
         else:
-            self.radius_fifo = np.array([ current_curverad ])
+            self.radius_fifo = np.array([current_curverad])
 
     def get_radius_in_meter(self):
         '''

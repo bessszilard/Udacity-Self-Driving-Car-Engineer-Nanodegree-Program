@@ -158,27 +158,30 @@ The polynomial fitting and position handled in ```draw_lanes()``` function, whic
 file.  Main steps are:
 
 * **Detect pixels which belongs to the two curve**. This step is implemented in ```search_around_poly()``` function. This method is uses the curves which were found in the previous frame. For the hyperparameters I used ```margin = 100``` and ```minpinx = 20```. If the previous curves doesn't exist or the search was unsuccessful, it returns the ```find_lane_pixels()``` function results. The ```find_lane_pixels()``` uses histograms with windows to find pixels, which belongs to the polynomials.
-* **Polynomial fitting to found pixels.** 
+* **Polynomial fitting to found pixels** is implemented in ```fit_poly_on_found_pixels()```. This function handles that case also if the curve not found.
+* **Filtering the Fitted polynomial** is done by ```Line``` class which is in the ```line.py```. The class uses a FIFO memory for average filtering. When I add new value with the  ```append()``` function of ```Line``` class, firstly I check with Least square error to determine, how much it differs from the previous curve. If the error is too high, the current value is ignored. I calculate the filtered polynomial with the mean of the FIFO memory.
 
 ![yellow white lanes](writeup_images\polynomial_subtitle.jpg)
 
-#### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
 
-#### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+#### 5. Calculating the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+The curvature calculation is done by ```get_radius_in_meter()``` function in the Line class. Every time, when I call ```append()``` function to add new value to the class, I recalculate the radius. 
 
-![alt text][image6]
+
+
+#### 6.Example image of result plotted back down onto the road such that the lane area is identified clearly.
+
+![Example image](video_images/vlcsnap-00007.jpg)
 
 ---
 
 ### Pipeline (video)
 
-#### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
+#### 1. [project_video](test_videos_output/project_video.mp4) 
 
-Here's a [link to my video result](./project_video.mp4)
+#### 2. [challenge_video](test_videos_output/challange_video.mp4) 
 
 ---
 
