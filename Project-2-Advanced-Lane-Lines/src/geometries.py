@@ -290,7 +290,7 @@ def draw_lanes(binary_warped, input_image):
     Handles the main drawing process.
     '''
     # Find our lane pixels first
-    leftx, lefty, rightx, righty, out_img = find_lane_pixels(binary_warped)
+    # leftx, lefty, rightx, righty, out_img = find_lane_pixels(binary_warped)
     leftx, lefty, rightx, righty, out_img = search_around_poly(binary_warped, left_lane.get_coefs(), right_lane.get_coefs())
 
     left_fitx, right_fitx, ploty, out_img = get_poly_pixels_form_coefs(leftx, lefty, rightx, righty, binary_warped, out_img)

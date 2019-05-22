@@ -2,8 +2,6 @@
 # import pickle
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 from geometries import get_perspective
 
 def get_mean_bigger_than(matrix, limit):
@@ -12,7 +10,7 @@ def get_mean_bigger_than(matrix, limit):
     '''
     return matrix.sum()/(limit < matrix).sum().astype(float)
 
-def alphaBetaAuto_correction(input_image):
+def alpha_beta_auto_correction(input_image):
     '''
     Increases rescales the matrix elements to [0 255] range.
     '''
@@ -30,15 +28,14 @@ def filter_white_lane(input_image):
     '''
     white_lane = np.copy(input_image)
     r_ch = white_lane[:, :, 0]
-    r_ch = alphaBetaAuto_correction(r_ch)
-
+    r_ch = alpha_beta_auto_correction(r_ch)
     threshold = get_mean_bigger_than(r_ch, 75)
-    r_ch[ r_ch * 0.8 < threshold ] = 0
+    r_ch[r_ch * 0.8 < threshold] = 0
 
     g_ch = white_lane[:, :, 1]
-    g_ch = alphaBetaAuto_correction(g_ch)
-    threshold =  get_mean_bigger_than(g_ch, 75)
-    g_ch[ (g_ch * 0.9 < threshold) ] = 0
+    g_ch = alpha_beta_auto_correction(g_ch)
+    threshold = get_mean_bigger_than(g_ch, 75)
+    g_ch[(g_ch * 0.9 < threshold)] = 0
 
     white_lane[:, :, 0] = r_ch
     white_lane[:, :, 1] = g_ch
@@ -55,18 +52,18 @@ def filter_yellow_lane(input_image):
     '''
     yellow_lane = np.copy(input_image)
     hls = cv2.cvtColor(yellow_lane, cv2.COLOR_RGB2HLS)
-    l_ch2 = hls[:, :, 1 ]
-    s_ch2 = hls[:, :, 2 ]
-    l_ch2 = alphaBetaAuto_correction(l_ch2)
-    s_ch2 = alphaBetaAuto_correction(s_ch2)   
-    s_ch2[ (l_ch2 < l_ch2.mean()) | ( s_ch2 < s_ch2.mean()) ] = 0
-    l_ch2[ (l_ch2 < l_ch2.mean()) | ( s_ch2 < s_ch2.mean()) ] = 0
+    l_ch = hls[:, :, 1 ]
+    s_ch = hls[:, :, 2 ]
+    l_ch = alpha_beta_auto_correction(l_ch)
+    s_ch = alpha_beta_auto_correction(s_ch)   
+    s_ch[(l_ch < l_ch.mean()) | (s_ch < s_ch.mean())] = 0
+    l_ch[(l_ch < l_ch.mean()) | (s_ch < s_ch.mean())] = 0
 
-    channelAdd = s_ch2 + l_ch2
-    yellowBirdsEye = get_perspective(channelAdd, 'b')
+    ch_add = s_ch + l_ch
+    yellow_birds_eye = get_perspective(ch_add, 'b')
 
-    yellowBirdsEye[yellowBirdsEye > 0] = 255
-    return yellowBirdsEye
+    yellow_birds_eye[yellow_birds_eye > 0] = 255
+    return yellow_birds_eye
 
 def draw_region_of_interest(input_image, top_left, top_right, bottom_left, bottom_right):
     '''

@@ -16,8 +16,8 @@ images_file_names = glob.glob('test_images/test*.jpg')
 # images_file_names = glob.glob('video_images/vlcsnap-0000*.jpg')
 
 # single_image = mpimg.imread('test_images/straight_lines1.jpg')
-# single_image = mpimg.imread('video_images/vlcsnap-00001.jpg')
-single_image = mpimg.imread('test_images/test1.jpg')
+single_image = mpimg.imread('video_images/vlcsnap-00001.jpg')
+# single_image = mpimg.imread('test_images/test1.jpg')
 
 # def alphaBetaAuto_correction(img):
 #     inputRange = np.amax(img) - np.amin(img)
@@ -38,12 +38,16 @@ def process_image(input_image):
 
     white_line_binary = filter_white_lane(__image)
     yellow_line_binary = filter_yellow_lane(input_image)
+    # __image[:, :, 0] = white_line_binary
+    # __image[:, :, 1] = yellow_line_binary
+    # __image[:, :, 2] = 0
+    # __image[__image > 0] = 255
     binary_warped = np.uint8(white_line_binary + yellow_line_binary)
 
     __image, road = draw_lanes(binary_warped, input_image) 
     __image = cv2.addWeighted(input_image, 1, __image, 1, 0)
 
-    __image = np.concatenate((__image, road), axis=1)
+    # __image = np.concatenate((__image, road), axis=1)
     frame_counter += 1
 
     # if frameCounter >= 120:
@@ -75,8 +79,8 @@ for i in range(4, len(images_file_names)):
 image = np.concatenate((disp_img_row1, disp_img_row2), axis=0)
 # # --------------------------------------------------------------------
 
-
-# image = process_image(single_image)
+clear_lane_fifos()
+image = process_image(single_image)
 plt.imshow(image)
 plt.show()
 # # single_image = draw_region_of_interest(single_image, top_left, top_right, bottom_left, bottom_right)
@@ -102,10 +106,10 @@ plt.show()
 frame_counter = 0
 clear_lane_fifos()
 
-# videoName = 'project_video.mp4'
-# # videoName = 'challenge_video.mp4'
-# # videoName = 'harder_challenge_video.mp4'
-# white_output = 'test_videos_output/' + videoName
-# clip1 = VideoFileClip(videoName)
-# white_clip = clip1.fl_image(process_image) #NOTE: this function expects color images!!
-# white_clip.write_videofile(white_output, audio=False)
+videoName = 'project_video.mp4'
+# videoName = 'challenge_video.mp4'
+# videoName = 'harder_challenge_video.mp4'
+white_output = 'test_videos_output/' + videoName
+clip1 = VideoFileClip(videoName)
+white_clip = clip1.fl_image(process_image) #NOTE: this function expects color images!!
+white_clip.write_videofile(white_output, audio=False)
