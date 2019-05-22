@@ -15,7 +15,7 @@ The goals / steps of this project are the following:
 
 #### 1. Calculating camera matrix and distortion coefficients to eliminate camera distortion. 
 
-Camera calibration process is located in ```cameraCailbration.py``` file. Calibration parameters which are the **camera matrix** and **distortion coefficients** are determined with ```get_calibration_params()```  function, and generate undistorted image with ```get_undistorted_image()``` function. I read the calibration pictures with glob library. With a for loop I processed all the images. These were process steps:
+Camera calibration process is located in ```src/cameraCailbration.py``` file. Calibration parameters which are the **camera matrix** and **distortion coefficients** are determined with ```get_calibration_params()```  function, and generate undistorted image with ```get_undistorted_image()``` function. I read the calibration pictures with glob library. With a for loop I processed all the images. These were process steps:
 
 1. Convert current image to grayscale
 2. Find corners with ```findChessboardCorners()``` function
@@ -37,16 +37,18 @@ Final results:
 
 ### Pipeline (single images)
 
+The image process pipeline is in 
+
 #### 1. Generate undistorted image
 
-I to eliminate distortion use the  **camera matrix** and **distortion coefficients**, which are calculated with camera calibration.
+To eliminate distortion, I used the  **camera matrix** and **distortion coefficients**, which are calculated with camera calibration.
 ![Sobel and HLS](writeup_images\distored_undistored_road.jpg)
 
 *Figure 3: Normal and Undistorted road image*
 
 #### 2. Get bird's eye view
 
-I generated bird's eye view with the ``get_birds_eye_img()	``. In the road image, I selected the four corners using the pyplot interactive menu. 
+Perspective correction method is located in ```src/geometries.py``` file. I generated bird's eye view with the ``get_perspective()	`` function. In the road image, I selected the four corners with the pyplot's interactive menu. 
 
 ```python
 top_left = (585, 453)
@@ -74,7 +76,7 @@ This resulted in the following source and destination points:
 | 270, 668  |  150, 1280  |
 | 1060, 668 |  570, 1280  |
 
-![Bird's eye veiew](writeup_images\birds_eye.jpg)
+![Bird's eye veiew](writeup_images\birds_eye2.jpg)
 
 #### 3. Image filtering
 
