@@ -192,3 +192,5 @@ The curvature calculation is done by ```get_radius_in_meter()``` function in the
 * For robust algorithm, light thresholds have to be adaptive.
 * In a storm, or with a dirt road, the algorithm couldn't work properly.
 * We could use convolutional neural networks (CNN), with multiple cameras, or Kalman filter to get the more robust result.
+* The filter will fail, if the FIFO memory is filled with corrupted data.
+* White lane detection will fail if the road sides are too bright
