@@ -180,9 +180,9 @@ The curvature calculation is done by ```get_radius_in_meter()``` function in the
 
 ### Pipeline (video)
 
-#### 1. [project_video](test_videos_output/project_video.mp4) 
+#### 1. [project_video](https://www.youtube.com/watch?v=dhsexUZopo0)
 
-#### 2. [challenge_video](test_videos_output/challenge_video.mp4) 
+#### 2. [challenge_video](https://www.youtube.com/watch?v=dhsexUZopo0) 
 
 ---
 
