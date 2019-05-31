@@ -69,23 +69,45 @@ Data distribution between classes:
 
 #### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
 
-As a first step, I decided to convert the images to grayscale because ...
+Image preprocess steps:
 
-Here is an example of a traffic sign image before and after grayscaling.
+* Create a copy to avoid overwrite original image.
 
-![alt text][image2]
+* Resize image to 32x32. This is needed if I import image from another place.
 
-As a last step, I normalized the image data because ...
+* Convert image to grayscale to force neural network to focus on shapes.
 
-I decided to generate additional data because ... 
+* alpha_beta_auto_correction which extend the image pixel intensity range to [0, 255 ]
 
-To add more data to the the data set, I used the following techniques because ... 
+  ```python
+  def alpha_beta_auto_correction(img):
+      inputRange = np.amax(img) - np.amin(img)
+      wantedrange = 255.0
+      alpha = wantedrange / inputRange
+      beta = - alpha * np.amin(img)
+      return (img * alpha + beta).astype("uint8")
+  ```
 
-Here is an example of an original image and an augmented image:
+* Normalize pixel intensity to increase optimizer algorithm effectiveness.
 
-![alt text][image3]
+![preprocessed image](writeup_images\preprocess_image.png)
 
-The difference between the original data set and the augmented data set is the following ... 
+At the training process, I generate augmented images to get more images, and to avoid overfitting. For image modification I used randomly zooming, adding pan,  random brightness, and sharpening. At training, with augmentation I increase the batch size with 20%.
+
+```python
+def random_augment(image):
+    if np.random.rand() < 0.5:   # 50% percent is true
+        image = pan(image)
+    if np.random.rand() < 0.5:   # 50% percent is true
+        image = zoom(image)
+    if np.random.rand() < 0.5:   # 50% percent is true
+        image = img_random_brigthness(image)
+    if np.random.rand() < 0.5:   # 50% percent is true
+        image = sharpen(image)
+    return image
+```
+
+![preprocessed image](writeup_images\augmented_image.png)
 
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
@@ -94,11 +116,11 @@ My final model consisted of the following layers:
 
 | Layer         		|     Description	        					|
 |:---------------------:|:---------------------------------------------:|
-| Input         		| 32x32x3 RGB image   							|
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
+| Input         		| 32x32x1 Gray image							|
+| Convolution 5x5     	| 1x1 stride, same padding, outputs 28x28x60 	|
 | RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x60 				|
+| Convolution 5x5		| etc.      									|
 | Fully connected		| etc.        									|
 | Softmax				| etc.        									|
 |						|												|
