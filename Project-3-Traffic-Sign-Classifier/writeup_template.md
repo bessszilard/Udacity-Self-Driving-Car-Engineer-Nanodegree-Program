@@ -166,7 +166,8 @@ Results:
 
 If an iterative approach was chosen:
 
-* First, I used the MNIST classifier LeNet architecture
+* First, I used the MNIST classifier LeNet architecture.
+* I increased the depth of the first two convolution layer to 60
 * When the saw that the model overfits after 10 epochs, I added the first dropout layer after the first fully connected layer.
 
 ![german_sign_predicitons](writeup_images/traning_process_validation_acc.png)
