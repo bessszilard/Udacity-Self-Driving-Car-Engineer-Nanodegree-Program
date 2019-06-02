@@ -174,9 +174,10 @@ If an iterative approach was chosen:
 
 ![german_sign_predicitons](writeup_images/german_signs_predictions.png)
 
-Figure X. The green title means correct, and the red is bad predictions.
+Figure 6. The green title means correct, and the red is bad predictions.
 
 Image0 ("Speed limit (100km/h)") results:
+
 | Class Id 			   | Probability    			     | &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;Prediction&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;	               |
 |:---------------------:|:-------------------------------:|:-------------------------------:|
 | 8	| 0.35514 | Speed limit (120km/h)	|
@@ -198,6 +199,7 @@ Image1 ("No entry") results:
 | 36	| 0.00000 | Go straight or right	|
 
 Image2 ("Turn right ahead") results:
+
 | Class Id 			   | Probability    			     | &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;Prediction&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;	               |
 |:---------------------:|:-------------------------------:|:-------------------------------:|
 | 33	| 0.99999 | Turn right ahead	|
@@ -207,6 +209,7 @@ Image2 ("Turn right ahead") results:
 | 37	| 0.00000 | Go straight or left	|
 
 Image3 ("Road work") results:
+
 | Class Id 			   | Probability    			     | &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;Prediction&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;	               |
 |:---------------------:|:-------------------------------:|:-------------------------------:|
 | 25	| 0.99999 | Road work	|
@@ -216,6 +219,7 @@ Image3 ("Road work") results:
 | 29	| 0.00000 | Bicycles crossing	|
 
 Image4 ("Bumpy road") results:
+
 | Class Id 			   | Probability    			     | &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;Prediction&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;	               |
 |:---------------------:|:-------------------------------:|:-------------------------------:|
 | 22	| 0.98908 | Bumpy road	|
@@ -225,6 +229,7 @@ Image4 ("Bumpy road") results:
 | 26	| 0.00020 | Traffic signals	|
 
 Image5 ("Speed limit (70km/h)") results:
+
 | Class Id 			   | Probability    			     | &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;Prediction&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;	               |
 |:---------------------:|:-------------------------------:|:-------------------------------:|
 | 4	| 0.93044 | Speed limit (70km/h)	|
@@ -234,6 +239,7 @@ Image5 ("Speed limit (70km/h)") results:
 | 8	| 0.00187 | Speed limit (120km/h)	|
 
 Image6 ("Dangerous curve to the right") results:
+
 | Class Id 			   | Probability    			     | &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;Prediction&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;	               |
 |:---------------------:|:-------------------------------:|:-------------------------------:|
 | 23	| 0.40319 | Slippery road	|
@@ -262,7 +268,7 @@ Image7 ("No passing") results:
 
 Here are five traffic signs that I found on the web:
 
-![images from web](D:/Self%20driving%20car/Data%20to%20Github/Udacity-Self-Driving-Car-Engineer-Nanodegree-Program/Project-3-Traffic-Sign-Classifier/writeup_images/images_from_internet.png)
+![images from web](writeup_images/images_from_internet.png)
 
 *Figure X. Predictions for unseen images*
 
@@ -272,6 +278,7 @@ Accuracy: 83.333 %
 ```
 
 Image0 ("Yield") results:
+
 | Class Id 			   | Probability    			     | &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;Prediction&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;	               |
 |:---------------------:|:-------------------------------:|:-------------------------------:|
 | 13	| 0.93031 | Yield	|
@@ -295,6 +302,7 @@ Image1 ("Road work") results:
 | 21	| 0.01794 | Double curve	|
 
 Image2 ("Speed limit (70km/h)") results:
+
 | Class Id 			   | Probability    			     | &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;Prediction&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;	               |
 |:---------------------:|:-------------------------------:|:-------------------------------:|
 | 4	| 0.88218 | Speed limit (70km/h)	|
