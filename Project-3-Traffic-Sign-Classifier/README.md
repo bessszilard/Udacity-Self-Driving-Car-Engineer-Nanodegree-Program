@@ -1,12 +1,4 @@
-# **Traffic Sign Recognition** 
-
-## Writeup
-
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
-
----
-
-**Build a Traffic Sign Recognition Project**
+# **Traffic Sign Recognition** Project 
 
 The goals / steps of this project are the following:
 * Load the data set (see below for links to the project data set)
@@ -139,7 +131,7 @@ My final model consisted of the following layers:
 Hyperparameters for training:
 
 ```python
-rate = 0.001
+rate = 0.0005
 EPOCHS = 15
 BATCH_SIZE = 128 # + 20 % augmentated images
 ```
@@ -154,9 +146,9 @@ Results:
 
 | Set name   | Accuracy |
 | ---------- | -------- |
-| Training   | 0.993    |
-| Validation | 0.967    |
-| Test       | 0.954    |
+| Training   | 0.992    |
+| Validation | 0.970    |
+| Test       | 0.956    |
 
 If an iterative approach was chosen:
 
