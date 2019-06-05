@@ -15,12 +15,12 @@ from io import BytesIO
 from keras.models import load_model
 import h5py
 from keras import __version__ as keras_version
+import cv2
 
 sio = socketio.Server()
 app = Flask(__name__)
 model = None
 prev_image_array = None
-
 
 class SimplePIController:
     def __init__(self, Kp, Ki):
@@ -42,6 +42,14 @@ class SimplePIController:
 
         return self.Kp * self.error + self.Ki * self.integral
 
+def img_preprocess(img):
+    img = img[60:135, :, :]                    # we don't need the top of the picture, because it is only terrian.
+                                            # We don't need also the bottom of the image, because it only the hood of the car
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV) # Nvidia model needed this color space
+    img = cv2.GaussianBlur(img, (3, 3), 0)     # Gaussian blur removes noise
+    img = cv2.resize(img, (200, 66))
+    img = img / 255
+    return img
 
 controller = SimplePIController(0.1, 0.002)
 set_speed = 9
@@ -61,7 +69,7 @@ def telemetry(sid, data):
         imgString = data["image"]
         image = Image.open(BytesIO(base64.b64decode(imgString)))
         image_array = np.asarray(image)
-        steering_angle = float(model.predict(image_array[None, :, :, :], batch_size=1))
+        steering_angle = float(model.predict(img_preprocess(image_array[None, :, :, :]), batch_size=1))
 
         throttle = controller.update(float(speed))
 
