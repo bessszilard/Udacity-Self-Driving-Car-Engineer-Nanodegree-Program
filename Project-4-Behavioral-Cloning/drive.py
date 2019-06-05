@@ -43,16 +43,17 @@ class SimplePIController:
         return self.Kp * self.error + self.Ki * self.integral
 
 def img_preprocess(img):
-    img = img[60:135, :, :]                    # we don't need the top of the picture, because it is only terrian.
-                                            # We don't need also the bottom of the image, because it only the hood of the car
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV) # Nvidia model needed this color space
-    img = cv2.GaussianBlur(img, (3, 3), 0)     # Gaussian blur removes noise
-    img = cv2.resize(img, (200, 66))
-    img = img / 255
-    return img
+	img = cv2.resize(img, (320, 160))
+    # img = img[60:135, :, :]                   # we don't need the top of the picture, because it is only terrian.
+												# We don't need also the bottom of the image, because it only the hood of the car
+	img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV) 	# Nvidia model needed this color space
+    # img = cv2.GaussianBlur(img, (3, 3), 0)    # Gaussian blur removes noise
+    
+    # img = img / 255
+	return img
 
 controller = SimplePIController(0.1, 0.002)
-set_speed = 9
+set_speed = 30
 controller.set_desired(set_speed)
 
 
@@ -69,11 +70,13 @@ def telemetry(sid, data):
         imgString = data["image"]
         image = Image.open(BytesIO(base64.b64decode(imgString)))
         image_array = np.asarray(image)
-        steering_angle = float(model.predict(img_preprocess(image_array[None, :, :, :]), batch_size=1))
+        image_array = img_preprocess(image_array)
+        # image_array = np.array([image_array])
+        steering_angle = float(model.predict(image_array[None, :, :, :], batch_size=1))
 
         throttle = controller.update(float(speed))
 
-        print(steering_angle, throttle)
+        print("{:4.3f} {:4.3f} {:4.3f}".format(float(steering_angle), float(throttle), float(speed)))
         send_control(steering_angle, throttle)
 
         # save frame
