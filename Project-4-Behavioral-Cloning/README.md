@@ -4,7 +4,7 @@
 
 Overview
 ---
-The goals / steps of this project are the following:
+The goals/steps of this project are the following:
 * Use the simulator to collect data of good driving behavior
 * Build, a convolution neural network in Keras that predicts steering angles from images
 * Train and validate the model with a training and validation set
@@ -30,9 +30,9 @@ The goals / steps of this project are the following:
 
 #### 1. Image preprocessing
 
-Proper image preprocessing is a vital step for a good result. Based on a [NVIDIA](https://devblogs.nvidia.com/deep-learning-self-driving-cars/) group paper, I converted the RGB images to YUV color space. The YUV color space more similar to human vision than RGB [[1]](https://annals-csis.org/Volume_3/pliks/206.pdf). To reduce noise, I used 3x3 Gaussian filter, on the processed image. The input and the output image resolution was 320x160.
+Proper image preprocessing is a vital step for a good result. Based on a [NVIDIA](https://devblogs.nvidia.com/deep-learning-self-driving-cars/) group paper, I converted the RGB images to YUV color space. The YUV color space more similar to human vision than RGB [[1]](https://annals-csis.org/Volume_3/pliks/206.pdf). To reduce noise, I used 3x3 Gaussian filter, on the processed image. The input and output image resolution was 320x160. Image preprocessing added to ```drive.py``` also.
 
-The cropping and the normalization was done in ```lambda_1``` layer.
+The cropping and the normalization were done in ```lambda_1``` layer.
 
 ![Original and preprocessed images](writeup_images/normal_preprocessed_image.png)
 
@@ -42,7 +42,7 @@ The cropping and the normalization was done in ```lambda_1``` layer.
 
 #### 2. Solution Design Approach
 
-My first step was to use a convolution neural network model similar to the [NVIDIA CNN model](https://devblogs.nvidia.com/deep-learning-self-driving-cars/).  I thought this model might be appropriate because, the with this network, researcher team controlled a real self-driving car. 
+My first step was to use a convolution neural network model similar to the [NVIDIA CNN model](https://devblogs.nvidia.com/deep-learning-self-driving-cars/).  I thought this model might be appropriate because, with this network, the researcher team controlled a real self-driving car. 
 
 In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
 
@@ -112,10 +112,10 @@ Here is a visualization of the architecture:
 
 #### 3. Creation of the Training Set & Training Process
 
-Data capturing for training process:
+Data capturing for the training process:
 
 * 3 laps clockwise center lane driving, (***A***)
-* 3 lap counter clockwise center lane driving (***B***)
+* 3 laps counter clockwise center lane driving (***B***)
 * Difficult bends were taken additionally with center (***C***), outer **(D)** and inner lane driving **(F)**
 * Some images were captured from Jungle track **(E)**
 
@@ -131,7 +131,7 @@ After the collection process, I had 10209 number of data points. I tried to incr
 
 I finally randomly shuffled the data set and put 20% of the data into a validation set. 
 
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 10. I used an Adam optimizer with these hyperparameters:
+I used this training data for training the model. The validation set helped determine if the model was over or underfitting. The ideal number of epochs was 10. I used an Adam optimizer with these hyperparameters:
 
 ```
 learning_rate = 0.3e-3
