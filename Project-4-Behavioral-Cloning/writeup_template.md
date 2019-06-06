@@ -115,6 +115,9 @@ Data capturing for training process:
 
 After the collection process, I had 10209 number of data points. I tried to increase the number of images with random flip augmentation with negative steer angle, but the results became worse.
 
+![Training images](writeup_images/steering_distribution.png)
+
+
 
 I finally randomly shuffled the data set and put 20% of the data into a validation set. 
 
@@ -126,8 +129,6 @@ batch_size = 32
 epochs = 10
 ```
 
-
-
-Training result:
+### Training result:
 
 ![Training images](writeup_images/training_curve.png)
