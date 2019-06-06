@@ -132,3 +132,8 @@ epochs = 10
 ### Training result:
 
 ![Training images](writeup_images/training_curve.png)
+
+### Layer activations:
+
+![Training images](writeup_images/conv_layers.png)
+
