@@ -14,17 +14,17 @@ The goals / steps of this project are the following:
 
 [//]: # "Figure References"
 
-[Figure 1]: ./writeup_images/cover.jpg "Cover photo"
-[Figure 2]: ./examples/placeholder.png "Grayscaling"
-[Figure 3]: ./examples/placeholder_small.png "Recovery Image"
-[Figure 4]: ./examples/placeholder_small.png "Recovery Image"
-[Figure 5]: ./examples/placeholder_small.png "Recovery Image"
-[Figure 6]: ./examples/placeholder_small.png "Normal Image"
-[Figure 7]: ./examples/placeholder_small.png "Flipped Image"
+[Figure 1]: ./writeup_images/youtube_video.jpg "Cover photo"
+[Figure 2]: ./writeup_images/normal_preprocessed_image.png "Original and preprocessed images]"
+[Figure 3]: ./writeup_images/model_arch.png "CNN architecture"
+[Figure 4]: ./writeup_images/training_images.png "Training images"
+[Figure 5]: ./writeup_images/steering_distribution.png "Steering distribution"
+[Figure 6]: ./writeup_images/training_curve.png "Training results"
+[Figure 7]: ./writeup_images/conv_layers.png "Layer activations"
 
 
 
-![Cover photo](writeup_images/cover.jpg)
+[![Cover photo](writeup_images/youtube_video_frame.jpg)](https://www.youtube.com/watch?v=pN_6YbeSVic)
 
 *Figure1: Simulator in autonomous mode*
 
@@ -147,6 +147,6 @@ epochs = 10
 
 ### Layer activations:
 
-![Training images](writeup_images/conv_layers.png)
+![Layer activations](writeup_images/conv_layers.png)
 
 *Figure 6: Layer activations for multiple layers*
