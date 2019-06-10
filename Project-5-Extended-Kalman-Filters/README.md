@@ -1,6 +1,19 @@
 # Extended Kalman Filter Project Starter Code
 Self-Driving Car Engineer Nanodegree Program
 
+## Set up environment:
+Install WSL (Windows subsystem Linux) on Windows 10 [Solution 1](https://docs.microsoft.com/en-us/windows/wsl/install-win10), [Soltuion 2](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/)
+
+[Change bash terminal color](https://github.com/Microsoft/WSL/issues/930#issuecomment-317563966).
+
+* sudo apt-get update
+* sudo apt-get install git
+* [Install latest cmake version](https://askubuntu.com/questions/355565/how-do-i-install-the-latest-version-of-cmake-from-the-command-line/865294)
+* sudo apt-get install openssl
+* sudo apt-get install libssl-dev
+
+[Zlib not found error solution](https://stackoverflow.com/questions/24808150/how-to-point-cmake-to-zlib-include-path)
+
 In this project you will utilize a kalman filter to estimate the state of a moving object of interest with noisy lidar and radar measurements. Passing the project requires obtaining RMSE values that are lower than the tolerance outlined in the project rubric. 
 
 This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases).
