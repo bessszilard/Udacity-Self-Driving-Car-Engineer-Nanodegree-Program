@@ -78,8 +78,8 @@ void KalmanFilter::UpdateEKF(const VectorXd &z)
 
   // y is in radial coordinates
   VectorXd z_pred = h_fun(x_);
-  // VectorXd y = z - z_pred;
-  // MatrixXd Ht = H_.transpose();
+  VectorXd y = z - z_pred;
+  MatrixXd Ht = H_.transpose();
   // MatrixXd S = H_ * P_ * Ht + R_; // 2x4 * 4x4 * 4x2 + 2x2
   // MatrixXd Si = S.inverse();
   // MatrixXd PHt = P_ * Ht;

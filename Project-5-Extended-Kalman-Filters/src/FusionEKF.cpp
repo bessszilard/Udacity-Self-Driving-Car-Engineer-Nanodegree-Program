@@ -159,6 +159,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     ekf_.UpdateEKF(measurement_pack.raw_measurements_);
   } else {
     // TODO: Laser updates
+    //  ekf_.Init(x_in, P_in, F_in, H_laser_, R_laser_, Q_in)
     ekf_.Update(measurement_pack.raw_measurements_);
 
   }
