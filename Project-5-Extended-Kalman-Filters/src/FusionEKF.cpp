@@ -40,23 +40,27 @@ FusionEKF::FusionEKF() {
   H_laser_ << 1, 0, 0, 0,
               0, 1, 0, 0;
 
-  ekf_.F_ = MatrixXd(4, 4);
-  ekf_.F_ << 1, 0, 1, 0,
-             0, 1, 0, 1,
-             0, 0, 1, 0,
-             0, 0, 0, 1;
+
   // allopcate memory
   VectorXd x_in = VectorXd(4);
   MatrixXd P_in = MatrixXd(4, 4);
   MatrixXd F_in = MatrixXd(4, 4);
-  MatrixXd H_in = MatrixXd(3, 4); // size ?
-  MatrixXd R_in = MatrixXd(3, 3);
   MatrixXd Q_in = MatrixXd(4, 4);
-  
-  ekf_.Init(x_in, P_in, F_in, H_in, R_in, Q_in);
 
-    // VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
-    //                     MatrixXd &H_in, MatrixXd &R_in, MatrixXd &Q_in) 
+  F_in << 1, 0, 1, 0,
+      0, 1, 0, 1,
+      0, 0, 1, 0,
+      0, 0, 0, 1;
+
+  P_in << 1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1000, 0,
+      0, 0, 0, 1000;
+
+  ekf_.Init(x_in, P_in, F_in, H_laser_, R_laser_, Q_in);
+
+  // VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
+  //                     MatrixXd &H_in, MatrixXd &R_in, MatrixXd &Q_in) 
 
   // Eigen::VectorXd &x_in, Eigen::MatrixXd &P_in, Eigen::MatrixXd &F_in,
   //     Eigen::MatrixXd &H_in, Eigen::MatrixXd &R_in, Eigen::MatrixXd &Q_in
@@ -145,6 +149,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
   } else {
     // TODO: Laser updates
+    ekf_.Update(measurement_pack.raw_measurements_);
 
   }
 
