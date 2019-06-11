@@ -75,6 +75,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   /**
    * Initialization
    */
+
+  // states x = [p_x, p_y, v_x, v_y]
+
   if (!is_initialized_) {
     /**
      * TODO: Initialize the state ekf_.x_ with the first measurement.
@@ -90,7 +93,12 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       // TODO: Convert radar from polar to cartesian coordinates 
       //         and initialize state.
-      
+      float ro     = measurement_pack.raw_measurements_[0];
+      float theta  = measurement_pack.raw_measurements_[1];
+      // float ro_dot = measurement_pack.raw_measurements_[2];
+
+      ekf_.x_[0] = ro * cos(theta); // px
+      ekf_.x_[1] = ro * sin(theta); // yx
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       // TODO: Initialize state.
@@ -146,7 +154,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // TODO: Radar updates
-
+    // VectorXd x_prime = tools.CalculateJacobian(measurement_pack.raw_measurements_);
+    // ekf_.UpdateEKF(x_prime);
+    ekf_.UpdateEKF(measurement_pack.raw_measurements_);
   } else {
     // TODO: Laser updates
     ekf_.Update(measurement_pack.raw_measurements_);
