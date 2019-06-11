@@ -10,6 +10,15 @@ using Eigen::VectorXd;
  *   VectorXd or MatrixXd objects with zeros upon creation.
  */
 
+float normalize_angle(float angle) {
+  // normalization to [-pi pi] range
+  if (angle < -M_PI)
+    return angle + 2 * M_PI;
+  if (M_PI < angle)
+    return angle - 2 * M_PI;
+  return angle;
+}
+
 KalmanFilter::KalmanFilter() {}
 
 KalmanFilter::~KalmanFilter() {}
@@ -63,18 +72,24 @@ MatrixXd h_fun(Eigen::VectorXd x_prime) {
 
   z_pred(0) = const1;
   z_pred(1) = atan2(py, px);
+  if (const1 < 0.0001) // avoid division with 0
+  {
+    const1 = 0.0001; // always positive
+  }
+
   z_pred(2) = (px * vx + py * vy) / (const1);
 
-  // normalization to [-pi pi] range
-  if (z_pred(1) < -M_PI)
-    z_pred(1) += 2 * M_PI;
-  if (M_PI < z_pred(1))
-    z_pred(1) -= 2 * M_PI;
+  // z_pred(1) = normalize_angle(z_pred(1));
+      // normalization to [-pi pi] range
+  //     if (< -M_PI)
+  //         z_pred(1) += 2 * M_PI;
+  // if (M_PI < z_pred(1))
+  //   z_pred(1) -= 2 * M_PI;
 
-  if (3.14 < abs(z_pred(1)))
-    {
-      std::cout << "!!!!!!!NORMALIZATION NEEDED!!!!!!!" << std::endl;
-    }
+  // if (3.14 < abs(z_pred(1)))
+  //   {
+  //     std::cout << "!!!!!!!NORMALIZATION NEEDED!!!!!!!" << std::endl;
+  //   }
 
   return z_pred;
 }
@@ -84,13 +99,10 @@ void KalmanFilter::UpdateEKF(const VectorXd &z)
   /**
    * TODO: update the state by using Extended Kalman Filter equations
    */
-  // float ro     = z[0];
-  // float theta  = z[1];
-  // float ro_dot = z[2];
-
   // y is in radial coordinates
   VectorXd z_pred = h_fun(x_);
   VectorXd y = z - z_pred;
+  y(1) = normalize_angle(y(1)); // z_pred(1)
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();
