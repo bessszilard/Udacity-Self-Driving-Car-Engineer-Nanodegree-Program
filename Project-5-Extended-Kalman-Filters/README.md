@@ -5,6 +5,7 @@ Self-Driving Car Engineer Nanodegree Program
 Install WSL (Windows subsystem Linux) on Windows 10 [Solution 1](https://docs.microsoft.com/en-us/windows/wsl/install-win10), [Soltuion 2](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/)
 
 [Change bash terminal color](https://github.com/Microsoft/WSL/issues/930#issuecomment-317563966).
+restart . ~/.bashrc
 
 * sudo apt-get update
 * sudo apt-get install git
@@ -13,6 +14,7 @@ Install WSL (Windows subsystem Linux) on Windows 10 [Solution 1](https://docs.mi
 * sudo apt-get install libssl-dev
 
 [Zlib not found error solution](https://stackoverflow.com/questions/24808150/how-to-point-cmake-to-zlib-include-path)
+
 
 In this project you will utilize a kalman filter to estimate the state of a moving object of interest with noisy lidar and radar measurements. Passing the project requires obtaining RMSE values that are lower than the tolerance outlined in the project rubric. 
 
