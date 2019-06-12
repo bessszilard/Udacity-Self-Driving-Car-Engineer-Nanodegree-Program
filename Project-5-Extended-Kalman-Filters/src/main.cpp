@@ -141,9 +141,9 @@ int main() {
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
           // for (int i=0; i<estimate.size(); ++i)
-          int i = 2;
-          std::cout << std::fixed << std::setw( 11 ) << std::setprecision( 6 )
-                                 << estimate[i] << "\t" << gt_values[i] << "\t" << RMSE(i) << std::endl;
+          // int i = 2;
+          // std::cout << std::fixed << std::setw( 11 ) << std::setprecision( 6 )
+                                //  << estimate[i] << "\t" << gt_values[i] << "\t" << RMSE(i) << std::endl;
           // std::cout << std::endl;
         }  // end "telemetry" if
 
