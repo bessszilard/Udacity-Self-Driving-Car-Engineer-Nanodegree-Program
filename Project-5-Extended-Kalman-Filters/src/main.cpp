@@ -4,6 +4,7 @@
 #include "json.hpp"
 #include "FusionEKF.h"
 #include "tools.h"
+#include <iomanip>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -139,7 +140,11 @@ int main() {
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-
+          // for (int i=0; i<estimate.size(); ++i)
+          int i = 2;
+          std::cout << std::fixed << std::setw( 11 ) << std::setprecision( 6 )
+                                 << estimate[i] << "\t" << gt_values[i] << "\t" << RMSE(i) << std::endl;
+          // std::cout << std::endl;
         }  // end "telemetry" if
 
       } else {
