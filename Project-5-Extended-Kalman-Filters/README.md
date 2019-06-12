@@ -1,6 +1,8 @@
 # Extended Kalman Filter Project Starter Code
 Self-Driving Car Engineer Nanodegree Program
 
+[![Cover photo](images/cover.jpg)](https://www.youtube.com/watch?v=tFoQLuOtT-c)
+
 ## Set up environment:
 Install WSL (Windows subsystem Linux) on Windows 10 [Solution 1](https://docs.microsoft.com/en-us/windows/wsl/install-win10), [Soltuion 2](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/)
 
@@ -90,14 +92,4 @@ using the following settings:
 * indent using spaces
 * set tab width to 2 spaces (keeps the matrices in source code aligned)
 
-## Code Style
-
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
-
-## Generating Additional Data
-
-This is optional!
-
-If you'd like to generate your own radar and lidar data, see the
-[utilities repo](https://github.com/udacity/CarND-Mercedes-SF-Utilities) for
-Matlab scripts that can generate additional data.
+ [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
