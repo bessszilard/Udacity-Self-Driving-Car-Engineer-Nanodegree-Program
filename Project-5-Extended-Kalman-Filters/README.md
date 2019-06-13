@@ -1,5 +1,4 @@
-# Extended Kalman Filter Project Starter Code
-Self-Driving Car Engineer Nanodegree Program
+# Extended Kalman Filter Project
 
 [![Cover photo](images/cover.jpg)](https://www.youtube.com/watch?v=tFoQLuOtT-c)
 
