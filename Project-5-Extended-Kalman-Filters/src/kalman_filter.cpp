@@ -35,7 +35,7 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
 
 void KalmanFilter::Predict() {
   /**
-   * TODO: predict the state
+   * The state prediction
    */
   x_ = F_ * x_;
   MatrixXd Ft = F_.transpose();
@@ -44,7 +44,7 @@ void KalmanFilter::Predict() {
 
 void KalmanFilter::Update(const VectorXd &z) {
   /**
-   * TODO: update the state by using Kalman Filter equations
+   * Updating the state by using Kalman Filter equations
    */
   VectorXd z_pred = H_ * x_;
   VectorXd y = z - z_pred;
@@ -76,20 +76,7 @@ MatrixXd h_fun(Eigen::VectorXd x_prime) {
   {
     const1 = 0.0001; // always positive
   }
-
   z_pred(2) = (px * vx + py * vy) / (const1);
-
-  // z_pred(1) = normalize_angle(z_pred(1));
-      // normalization to [-pi pi] range
-  //     if (< -M_PI)
-  //         z_pred(1) += 2 * M_PI;
-  // if (M_PI < z_pred(1))
-  //   z_pred(1) -= 2 * M_PI;
-
-  // if (3.14 < abs(z_pred(1)))
-  //   {
-  //     std::cout << "!!!!!!!NORMALIZATION NEEDED!!!!!!!" << std::endl;
-  //   }
 
   return z_pred;
 }
@@ -97,19 +84,19 @@ MatrixXd h_fun(Eigen::VectorXd x_prime) {
 void KalmanFilter::UpdateEKF(const VectorXd &z)
 {
   /**
-   * TODO: update the state by using Extended Kalman Filter equations
+   * Updating the state by using Extended Kalman Filter equations
    */
   // y is in radial coordinates
   VectorXd z_pred = h_fun(x_);
   VectorXd y = z - z_pred;
-  y(1) = normalize_angle(y(1)); // z_pred(1)
+  y(1) = normalize_angle(y(1));
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();
   MatrixXd PHt = P_ * Ht;
   MatrixXd K = PHt * Si;
 
-  // // //new estimate
+  //new estimate
   x_ = x_ + (K * y);
   long x_size = x_.size();
   MatrixXd I = MatrixXd::Identity(x_size, x_size);
