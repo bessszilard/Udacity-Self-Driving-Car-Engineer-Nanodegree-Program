@@ -18,8 +18,12 @@
 
 #include "helper_functions.h"
 
+using std::normal_distribution;
 using std::string;
 using std::vector;
+using std::cout;
+using std::endl;
+
 
 void ParticleFilter::init(double x, double y, double theta, double std[]) {
   /**
@@ -30,8 +34,36 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-  num_particles = 0;  // TODO: Set the number of particles
+  num_particles = 1000;  // TODO: Set the number of particles
+  std::default_random_engine gen;
 
+  double std_x = std[0];
+  double std_y = std[1];
+  double std_theta = std[2];
+
+  // This line creates a normal (Gaussian) distribution for x
+  normal_distribution<double> dist_x(x, std_x);
+
+  // TODO: Create normal distributions for y and theta
+  normal_distribution<double> dist_y(y, std_y);
+  normal_distribution<double> dist_theta(theta, std_theta);
+
+  particles.resize(num_particles); // allocating memory for N particles
+
+  cout << "Particles number" << particles.size() << endl;
+  for (size_t i = 0; i < particles.size(); ++i) {
+    // TODO: Sample from these normal distributions like this:
+    //   sample_x = dist_x(gen);
+    //   where "gen" is the random engine initialized earlier.
+    particles[i].x = dist_x(gen);    
+    particles[i].y = dist_y(gen);
+    particles[i].theta = dist_theta(gen);
+
+    // weights
+    particles[i].weight = 1;
+  }
+
+  is_initialized = true;
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[], 
