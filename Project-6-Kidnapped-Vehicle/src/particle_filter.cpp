@@ -209,7 +209,7 @@ double get_probability(vector<LandmarkObs> particle_obs, vector<LandmarkObs> sen
   double sig_x, sig_y, x_obs, y_obs, mu_x, mu_y;
 
   if (particle_obs.size() != sensor_obs.size())
-    return -1;
+    return 0;
   else if (particle_obs.size() != 0)
   {
     probab = 1.0;
@@ -291,9 +291,28 @@ void ParticleFilter::resample() {
    * NOTE: You may find std::discrete_distribution helpful here.
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
+  // create vector from weights
 
-  // 
 
+  // source: https://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::vector<double> weights(particles.size());
+
+  std::vector<Particle> new_particles(num_particles);
+
+  for (size_t i = 0; i < particles.size(); i++)
+    weights[i] = particles[i].weight;
+
+  std::discrete_distribution<> d(weights.begin(), weights.end());
+
+  // std::piecewise_constant_distribution<> d(weights.begin(), weights.end());
+
+  for (size_t i = 0; i < particles.size(); i++) {
+    new_particles[i] = particles[d(gen)];
+  }
+  particles = new_particles;
+  cout << "-----------------------------------" << endl;
 }
 
 void ParticleFilter::SetAssociations(Particle& particle, 
