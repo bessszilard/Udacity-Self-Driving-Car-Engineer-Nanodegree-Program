@@ -120,9 +120,27 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
    *   probably find it useful to implement this method and use it as a helper 
    *   during the updateWeights phase.
    */
-  cout << predicted.size() << " ";
+  cout << "dataAssociation " << predicted.size() << " ";
   cout << observations.size() << endl;
-
+  if (0 < predicted.size()) {
+    for (size_t i = 0; i < observations.size(); ++i)
+    {
+      size_t min_obs_idx = 0;
+      double min_obs = dist(predicted[0].x, predicted[0].y, observations[i].x, observations[i].y);
+      for (size_t j = 1; j < predicted.size(); ++j)
+      {
+        double dist_temp = dist(predicted[j].x, predicted[j].y, observations[i].x, observations[i].y);
+        if (min_obs > dist_temp)
+        {
+          min_obs = dist_temp;
+          min_obs_idx = j;
+        }
+      }
+      observations[i].x = predicted[min_obs_idx].x;
+      observations[i].y = predicted[min_obs_idx].y;
+      observations[i].id = predicted[min_obs_idx].id;
+    }
+  }
 }
 
 vector<LandmarkObs> get_in_range_landmarks(double sensor_range, Particle particle, Map map_landmarks) {
@@ -142,14 +160,33 @@ vector<LandmarkObs> get_in_range_landmarks(double sensor_range, Particle particl
   return predicted;
 }
 
-/**
+void transform_to_map(Particle particle_pos, vector<LandmarkObs> &observations) {
+
+  for(size_t i = 0; i < observations.size(); ++i) {
+    double x_p = particle_pos.x;
+    double y_p = particle_pos.y;
+    double theta = particle_pos.theta;
+    double x_c = observations[i].x;  // car observation
+    double y_c = observations[i].y;  // car observation
+
+    observations[i].x = x_p + cos(theta) * x_c - sin(theta) * y_c;
+    observations[i].y = y_p + sin(theta) * x_c + cos(theta) * y_c;
+  }
+}
+
+// double get_RMSE(vector<LandmarkObs> particle_obs, vector<LandmarkObs> sensor_obs){
+//   double error[3];
+//   error = getError(particle_obs.x, particle_obs.y, particle_obs.th)
+// }
+  
+    /**
  * @param sensor_range - range of the sensor
  * @param std_landmark - landmark measurements uncertainities
  * @param observations - vector of landmark measurements
  */
-void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
-                                   const vector<LandmarkObs> &observations, 
-                                   const Map &map_landmarks) {
+void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
+                                       const vector<LandmarkObs> &observations,
+                                       const Map &map_landmarks) {
   /**
    * TODO: Update the weights of each particle using a mult-variate Gaussian 
    *   distribution. You can read more about this distribution here: 
@@ -166,15 +203,25 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
   // Step 1. Predict measurements to all landmarks within sensor range for each particle
   for (size_t i = 0; i < particles.size(); ++i)  {
+    vector<LandmarkObs> temp_obs(observations); // deep copy
+    vector<LandmarkObs> temp_obs_landmark; // deep copy
+    transform_to_map(particles[i], temp_obs);
+    
+    // // Step 2. With predicted landmark measurements we can call the dataAssociation() function
+    // // to associate the sensor measurments to map landmarks
+    temp_obs_landmark = temp_obs;
     vector<LandmarkObs> predicted = get_in_range_landmarks(sensor_range, particles[i], map_landmarks);
-    if ( i == 5 )
-      cout << predicted.size() << " " << observations.size() << endl;
+    dataAssociation(predicted, temp_obs_landmark);
+
+    // Step 3. Calculate the new weights of the particles
+
+
+    // double error = getError()
+    // if ( i == 5 )
+    //   cout << predicted.size() << " " << observations.size() << endl;
   }
         // vector<LandmarkObs> predicted
 
-        // Step 2. With predicted landmark measurements we can call the dataAssociation() function
-        // to associate the sensor measurments to map landmarks
-        // Step 3. Calculate the new weights of the particles
 
         // Step 4. Normalize the weights
 
