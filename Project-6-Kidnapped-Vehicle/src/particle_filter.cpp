@@ -34,7 +34,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-  num_particles = 1000;  // TODO: Set the number of particles
+  num_particles = 100;  // TODO: Set the number of particles
   std::default_random_engine gen;
 
   double std_x = std[0];
@@ -67,17 +67,16 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 /**
  * Returns the prediction of the given variable based on Lesson 8 formulas
  */
-double inline get_prediction( Particle particle, double v, double thetaD, double dt, char operation) {
+inline double get_prediction(Particle particle, double v, double thetaD, double dt, char operation) {
   switch(operation) {
     case 'x': return particle.x + v / thetaD * (sin(particle.theta + thetaD * dt) - sin(particle.theta));
-    case 'y': return particle.y + v / thetaD * (cos(particle.theta) - cos(particle.theta - thetaD * dt));
+    case 'y': return particle.y + v / thetaD * (cos(particle.theta) - cos(particle.theta + thetaD * dt));
     case 't': return particle.theta + thetaD * dt;
     default:  return 0;  // unkonown command
   }
 }
 
-void ParticleFilter::prediction(double delta_t, double std_pos[], 
-                                double velocity, double yaw_rate) {
+void ParticleFilter::prediction(double delta_t, double std_pos[], double velocity, double yaw_rate) {
   /**
    * TODO: Add measurements to each particle and add random Gaussian noise.
    * NOTE: When adding noise you may find std::normal_distribution 
@@ -92,8 +91,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
   double std_y = std_pos[1];
   double std_theta = std_pos[2];
 
-  for (size_t i = 0; i < particles.size(); ++i)
-  {
+  for (size_t i = 0; i < particles.size(); ++i) {
     double x_f     = get_prediction(particles[i], velocity, yaw_rate, delta_t, 'x');
     double y_f     = get_prediction(particles[i], velocity, yaw_rate, delta_t, 'y');
     double theta_f = get_prediction(particles[i], velocity, yaw_rate, delta_t, 't');
@@ -108,8 +106,12 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
   }
 }
 
+/**
+ *  @param predicted - predictive measurements between a particle and all of the map landmarks in sensor range 
+ *  @param observations- actual measurments from the LIDAR 
+ */
 void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted, 
-                                     vector<LandmarkObs>& observations) {
+                                     vector<LandmarkObs> &observations) {
   /**
    * TODO: Find the predicted measurement that is closest to each 
    *   observed measurement and assign the observed measurement to this 
@@ -118,9 +120,33 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
    *   probably find it useful to implement this method and use it as a helper 
    *   during the updateWeights phase.
    */
+  cout << predicted.size() << " ";
+  cout << observations.size() << endl;
 
 }
 
+vector<LandmarkObs> get_in_range_landmarks(double sensor_range, Particle particle, Map map_landmarks) {
+  vector<LandmarkObs> predicted;
+  for (size_t i = 0; i < map_landmarks.landmark_list.size(); ++i) {
+    // whithin range
+    if (sensor_range >= dist(particle.x, particle.y, map_landmarks.landmark_list[i].x_f, map_landmarks.landmark_list[i].y_f)) {
+      // add object to 
+      LandmarkObs in_range_landmark = {
+        map_landmarks.landmark_list[i].id_i,
+        map_landmarks.landmark_list[i].x_f,
+        map_landmarks.landmark_list[i].y_f
+      };
+        predicted.push_back(in_range_landmark);
+      }
+    }
+  return predicted;
+}
+
+/**
+ * @param sensor_range - range of the sensor
+ * @param std_landmark - landmark measurements uncertainities
+ * @param observations - vector of landmark measurements
+ */
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
                                    const vector<LandmarkObs> &observations, 
                                    const Map &map_landmarks) {
@@ -138,6 +164,39 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
    *   (look at equation 3.33) http://planning.cs.uiuc.edu/node99.html
    */
 
+  // Step 1. Predict measurements to all landmarks within sensor range for each particle
+  for (size_t i = 0; i < particles.size(); ++i)  {
+    vector<LandmarkObs> predicted = get_in_range_landmarks(sensor_range, particles[i], map_landmarks);
+    if ( i == 5 )
+      cout << predicted.size() << " " << observations.size() << endl;
+  }
+        // vector<LandmarkObs> predicted
+
+        // Step 2. With predicted landmark measurements we can call the dataAssociation() function
+        // to associate the sensor measurments to map landmarks
+        // Step 3. Calculate the new weights of the particles
+
+        // Step 4. Normalize the weights
+
+        // for(size_t i = 0; i < observations.size(); ++i) {
+        //   cout << observations[i].id << " " << observations[i].x << " " << observations[i].y << "\t";
+        // }
+        // cout << endl;
+
+    //     for (size_t i = 0; i < map_landmarks.landmark_list.size(); ++i)
+    // {
+    //   cout << map_landmarks.landmark_list[i].id_i << " " << map_landmarks.landmark_list[i].x_f << " " << map_landmarks.landmark_list[i].y_f << "\t";
+    // }
+    // cout << endl;
+
+    // double prob = 1.0;
+    // for (int i = 0; i < observations.size(); ++i)
+    // {
+    //   double dist =
+
+    // }
+    // cout << map_landmarks.landmark_list.size() << " " << observations.size() << endl;
+
 }
 
 void ParticleFilter::resample() {
@@ -147,6 +206,8 @@ void ParticleFilter::resample() {
    * NOTE: You may find std::discrete_distribution helpful here.
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
+
+  // 
 
 }
 
