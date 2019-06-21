@@ -120,8 +120,8 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
    *   probably find it useful to implement this method and use it as a helper 
    *   during the updateWeights phase.
    */
-  cout << "dataAssociation " << predicted.size() << " ";
-  cout << observations.size() << endl;
+  // cout << "dataAssociation " << predicted.size() << " ";
+  // cout << observations.size() << endl;
   if (0 < predicted.size()) {
     for (size_t i = 0; i < observations.size(); ++i)
     {
@@ -174,20 +174,71 @@ void transform_to_map(Particle particle_pos, vector<LandmarkObs> &observations) 
   }
 }
 
-// double get_RMSE(vector<LandmarkObs> particle_obs, vector<LandmarkObs> sensor_obs){
-//   double error[3];
-//   error = getError(particle_obs.x, particle_obs.y, particle_obs.th)
-// }
-  
-    /**
+double get_RMSE(vector<LandmarkObs> particle_obs, vector<LandmarkObs> sensor_obs) {
+  double rmse = std::numeric_limits<double>::infinity();
+  if (particle_obs.size() != sensor_obs.size())
+    return -1;
+  else if (particle_obs.size() != 0) {
+    rmse = 0;
+    for (size_t i = 0; i < particle_obs.size(); ++i)
+    {
+      rmse += sqrt(pow(particle_obs[i].x - sensor_obs[i].x, 2) + pow(particle_obs[i].y - sensor_obs[i].y, 2));
+    }
+  }
+  return rmse;
+}
+
+double multiv_prob(double sig_x, double sig_y, double x_obs, double y_obs, double mu_x, double mu_y) {
+  // calculate normalization term
+  double gauss_norm;
+  gauss_norm = 1 / (2 * M_PI * sig_x * sig_y);
+
+  // calculate exponent
+  double exponent;
+  exponent = (pow(x_obs - mu_x, 2) / (2 * pow(sig_x, 2))) + (pow(y_obs - mu_y, 2) / (2 * pow(sig_y, 2)));
+
+  // calculate weight using normalization terms and exponent
+  double weight;
+  weight = gauss_norm * exp(-exponent);
+
+  return weight;
+}
+
+double get_probability(vector<LandmarkObs> particle_obs, vector<LandmarkObs> sensor_obs, double std_landmark[]) {
+  double probab = 0;
+  double sig_x, sig_y, x_obs, y_obs, mu_x, mu_y;
+
+  if (particle_obs.size() != sensor_obs.size())
+    return -1;
+  else if (particle_obs.size() != 0)
+  {
+    probab = 1.0;
+    sig_x = std_landmark[0];
+    sig_y = std_landmark[1];
+
+    for (size_t i = 0; i < particle_obs.size(); ++i) {
+      x_obs = particle_obs[i].x;
+      y_obs = particle_obs[i].y;
+      mu_x  = sensor_obs[i].x;
+      mu_y  = sensor_obs[i].y;
+
+      probab *= multiv_prob(sig_x, sig_y, x_obs, y_obs, mu_x, mu_y);
+    }
+  }
+  return probab;
+}
+
+
+  /**
  * @param sensor_range - range of the sensor
  * @param std_landmark - landmark measurements uncertainities
  * @param observations - vector of landmark measurements
  */
-void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
-                                       const vector<LandmarkObs> &observations,
-                                       const Map &map_landmarks) {
-  /**
+  void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
+                                     const vector<LandmarkObs> &observations,
+                                     const Map &map_landmarks)
+  {
+    /**
    * TODO: Update the weights of each particle using a mult-variate Gaussian 
    *   distribution. You can read more about this distribution here: 
    *   https://en.wikipedia.org/wiki/Multivariate_normal_distribution
@@ -201,49 +252,36 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
    *   (look at equation 3.33) http://planning.cs.uiuc.edu/node99.html
    */
 
-  // Step 1. Predict measurements to all landmarks within sensor range for each particle
-  for (size_t i = 0; i < particles.size(); ++i)  {
-    vector<LandmarkObs> temp_obs(observations); // deep copy
-    vector<LandmarkObs> temp_obs_landmark; // deep copy
-    transform_to_map(particles[i], temp_obs);
-    
-    // // Step 2. With predicted landmark measurements we can call the dataAssociation() function
-    // // to associate the sensor measurments to map landmarks
-    temp_obs_landmark = temp_obs;
-    vector<LandmarkObs> predicted = get_in_range_landmarks(sensor_range, particles[i], map_landmarks);
-    dataAssociation(predicted, temp_obs_landmark);
+    // Step 1. Predict measurements to all landmarks within sensor range for each particle
+    double weight_sum = 0.0;
+    for (size_t i = 0; i < particles.size(); ++i)
+    {
+      vector<LandmarkObs> temp_obs(observations); // deep copy
+      vector<LandmarkObs> temp_obs_landmark;      // deep copy
+      transform_to_map(particles[i], temp_obs);
 
-    // Step 3. Calculate the new weights of the particles
+      // // Step 2. With predicted landmark measurements we can call the dataAssociation() function
+      // // to associate the sensor measurments to map landmarks
+      temp_obs_landmark = temp_obs;
+      vector<LandmarkObs> predicted = get_in_range_landmarks(sensor_range, particles[i], map_landmarks);
+      dataAssociation(predicted, temp_obs_landmark);
 
+      if (temp_obs_landmark.size() != temp_obs.size())
+        cout << "updateWeights " << temp_obs_landmark.size() << " " << temp_obs.size() << endl;
+      // else
+      // {
+      //   // cout << "probab rmse " << get_RMSE(temp_obs_landmark, temp_obs) << endl;
 
-    // double error = getError()
-    // if ( i == 5 )
-    //   cout << predicted.size() << " " << observations.size() << endl;
-  }
-        // vector<LandmarkObs> predicted
-
-
-        // Step 4. Normalize the weights
-
-        // for(size_t i = 0; i < observations.size(); ++i) {
-        //   cout << observations[i].id << " " << observations[i].x << " " << observations[i].y << "\t";
-        // }
-        // cout << endl;
-
-    //     for (size_t i = 0; i < map_landmarks.landmark_list.size(); ++i)
-    // {
-    //   cout << map_landmarks.landmark_list[i].id_i << " " << map_landmarks.landmark_list[i].x_f << " " << map_landmarks.landmark_list[i].y_f << "\t";
-    // }
-    // cout << endl;
-
-    // double prob = 1.0;
-    // for (int i = 0; i < observations.size(); ++i)
-    // {
-    //   double dist =
-
-    // }
-    // cout << map_landmarks.landmark_list.size() << " " << observations.size() << endl;
-
+      //   cout << "probab " << 
+      // }
+      // Step 3. Calculate the new weights of the particles
+      particles[i].weight = get_probability(temp_obs_landmark, temp_obs, std_landmark);
+      weight_sum += particles[i].weight;
+    }
+    // Step 4. Normalize the weights
+    for(size_t i = 0; i < particles.size(); ++i) {
+      particles[i].weight /= weight_sum;
+    }
 }
 
 void ParticleFilter::resample() {
