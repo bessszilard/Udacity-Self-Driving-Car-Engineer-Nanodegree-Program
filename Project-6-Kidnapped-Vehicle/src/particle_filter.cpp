@@ -64,6 +64,17 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   }
   is_initialized = true;
 }
+/**
+ * Returns the prediction of the given variable based on Lesson 8 formulas
+ */
+double inline get_prediction( Particle particle, double v, double thetaD, double dt, char operation) {
+  switch(operation) {
+    case 'x': return particle.x + v / thetaD * (sin(particle.theta + thetaD * dt) - sin(particle.theta));
+    case 'y': return particle.y + v / thetaD * (cos(particle.theta) - cos(particle.theta - thetaD * dt));
+    case 't': return particle.theta + thetaD * dt;
+    default:  return 0;  // unkonown command
+  }
+}
 
 void ParticleFilter::prediction(double delta_t, double std_pos[], 
                                 double velocity, double yaw_rate) {
@@ -75,6 +86,26 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
    *  http://www.cplusplus.com/reference/random/default_random_engine/
    */
 
+  std::default_random_engine gen;
+
+  double std_x = std_pos[0];
+  double std_y = std_pos[1];
+  double std_theta = std_pos[2];
+
+  for (size_t i = 0; i < particles.size(); ++i)
+  {
+    double x_f     = get_prediction(particles[i], velocity, yaw_rate, delta_t, 'x');
+    double y_f     = get_prediction(particles[i], velocity, yaw_rate, delta_t, 'y');
+    double theta_f = get_prediction(particles[i], velocity, yaw_rate, delta_t, 't');
+
+    normal_distribution<double> dist_x(x_f, std_x);
+    normal_distribution<double> dist_y(y_f, std_y);
+    normal_distribution<double> dist_theta(theta_f, std_theta);
+
+    particles[i].x = dist_x(gen);
+    particles[i].y = dist_y(gen);
+    particles[i].theta = dist_theta(gen);
+  }
 }
 
 void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted, 

@@ -113,3 +113,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+Project-6-Kidnapped-Vehicle/.vscode/ipch/e4a4b3a9c2f8c5b0/particle_filter.ipch
+Project-6-Kidnapped-Vehicle/.vscode/ipch/a87142cc5d350548/main.ipch
+Project-6-Kidnapped-Vehicle/.vscode/ipch/a87142cc5d350548/mmap_address.bin
+Project-6-Kidnapped-Vehicle/.vscode/ipch/e4a4b3a9c2f8c5b0/mmap_address.bin
