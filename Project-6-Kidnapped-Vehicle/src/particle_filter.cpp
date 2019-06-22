@@ -154,6 +154,9 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
   }
 }
 
+/**
+ * Returns the which are within landmarks the sensor range.
+ */
 vector<LandmarkObs> get_in_range_landmarks(double sensor_range, Particle particle, Map map_landmarks) {
   vector<LandmarkObs> predicted;
   for (size_t i = 0; i < map_landmarks.landmark_list.size(); ++i) {
@@ -171,6 +174,10 @@ vector<LandmarkObs> get_in_range_landmarks(double sensor_range, Particle particl
   return predicted;
 }
 
+/**
+ * Transforms observation coordinates to map coordinate (relative to absolute).
+ * The function uses 2D homogenous transformation on x coordinate.
+ */
 void transform_to_map(Particle particle_pos, vector<LandmarkObs> &observations) {
 
   for(size_t i = 0; i < observations.size(); ++i) {
@@ -185,20 +192,9 @@ void transform_to_map(Particle particle_pos, vector<LandmarkObs> &observations) 
   }
 }
 
-double get_RMSE(vector<LandmarkObs> particle_obs, vector<LandmarkObs> sensor_obs) {
-  double rmse = std::numeric_limits<double>::infinity();
-  if (particle_obs.size() != sensor_obs.size())
-    return -1;
-  else if (particle_obs.size() != 0) {
-    rmse = 0;
-    for (size_t i = 0; i < particle_obs.size(); ++i)
-    {
-      rmse += sqrt(pow(particle_obs[i].x - sensor_obs[i].x, 2) + pow(particle_obs[i].y - sensor_obs[i].y, 2));
-    }
-  }
-  return rmse;
-}
-
+/**
+ * Returns multivariant Gaussian for x, y coordinates.
+ */
 double multiv_prob(double sig_x, double sig_y, double x_obs, double y_obs, double mu_x, double mu_y) {
   // calculate normalization term
   double gauss_norm;
@@ -215,6 +211,9 @@ double multiv_prob(double sig_x, double sig_y, double x_obs, double y_obs, doubl
   return weight;
 }
 
+/**
+ * Returns the probability for the specific particle
+ */
 double get_probability(vector<LandmarkObs> particle_obs, vector<LandmarkObs> sensor_obs, double std_landmark[]) {
   double probab = 0;
   double sig_x, sig_y, x_obs, y_obs, mu_x, mu_y;
@@ -271,20 +270,14 @@ double get_probability(vector<LandmarkObs> particle_obs, vector<LandmarkObs> sen
       vector<LandmarkObs> temp_obs_landmark;      // deep copy
       transform_to_map(particles[i], temp_obs);
 
-      // // Step 2. With predicted landmark measurements we can call the dataAssociation() function
-      // // to associate the sensor measurments to map landmarks
+      // Step 2. With predicted landmark measurements we can call the dataAssociation() function
       temp_obs_landmark = temp_obs;
       vector<LandmarkObs> predicted = get_in_range_landmarks(sensor_range, particles[i], map_landmarks);
       dataAssociation(predicted, temp_obs_landmark);
 
       if (temp_obs_landmark.size() != temp_obs.size())
         cout << "updateWeights " << temp_obs_landmark.size() << " " << temp_obs.size() << endl;
-      // else
-      // {
-      //   // cout << "probab rmse " << get_RMSE(temp_obs_landmark, temp_obs) << endl;
 
-      //   cout << "probab " << 
-      // }
       // Step 3. Calculate the new weights of the particles
       particles[i].weight = get_probability(temp_obs_landmark, temp_obs, std_landmark);
       weight_sum += particles[i].weight;
@@ -309,21 +302,16 @@ void ParticleFilter::resample() {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::vector<double> weights(particles.size());
-
   std::vector<Particle> new_particles(num_particles);
 
   for (size_t i = 0; i < particles.size(); i++)
     weights[i] = particles[i].weight;
 
   std::discrete_distribution<> d(weights.begin(), weights.end());
-
-  // std::piecewise_constant_distribution<> d(weights.begin(), weights.end());
-
   for (size_t i = 0; i < particles.size(); i++) {
     new_particles[i] = particles[d(gen)];
   }
   particles = new_particles;
-  // cout << "-----------------------------------" << endl;
 }
 
 void ParticleFilter::SetAssociations(Particle& particle, 
