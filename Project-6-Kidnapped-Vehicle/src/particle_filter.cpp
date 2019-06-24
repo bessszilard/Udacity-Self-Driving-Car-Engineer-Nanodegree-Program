@@ -70,7 +70,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 inline double get_prediction(Particle particle, double v, double thetaD, double dt, char operation) {
   // yaw rate is close to zero
   if (fabs(thetaD) < 0.0000001f) {
-    cout << "yaw rate " << thetaD << endl;
+    // cout << "yaw rate " << thetaD << endl;
     switch (operation) {
       case 'x': return particle.x + v * dt * cos(particle.theta);
       case 'y': return particle.y + v * dt * sin(particle.theta);
