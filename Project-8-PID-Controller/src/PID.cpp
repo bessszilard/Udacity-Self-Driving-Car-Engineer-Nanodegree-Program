@@ -35,22 +35,23 @@ double PID::Integration_windup(double error) {
   /*
    * Limit Kp * error_i to max min limit
    */
-  if (error < actuator[0] / Kp)
-    error = actuator[0] / Kp;
-  if (actuator[1] / Kp < error)
+  double mult = 3.0f;
+  if (error < mult * actuator[0] / Kp)
+    error = mult * actuator[0] / Kp;
+  if (actuator[1] / Kp * mult < error)
     error = 1 / actuator[1] / Kp;
   return error;
 }
 
 double PID::GetActuation(double error) {
   /**
-   * TODO: Update PID errors based on cte.
+   * PID errors and output based on cte.
    */
   static double error_i = 0;
   static double error_prev = 0;
   double error_d = error - error_prev;
   error_i += error;
-  error_i = Integration_windup(error_i);
+  // error_i = Integration_windup(error_i);
 
   error_prev = error;
   
@@ -61,11 +62,4 @@ double PID::GetActuation(double error) {
 
   u_t = Limit_actuator(u_t);
   return u_t;
-}
-
-double PID::TotalError() {
-  /**
-   * TODO: Calculate and return the total error
-   */
-  return 0.0;  // TODO: Add your total error calc here!
 }

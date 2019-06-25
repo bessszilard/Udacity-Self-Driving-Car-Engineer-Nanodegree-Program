@@ -25,12 +25,6 @@ class PID {
    */
   double GetActuation(double error);
 
-  /**
-   * Calculate the total PID error.
-   * @output The total PID error
-   */
-  double TotalError();
-
   private :
   /**
    * PID Errors
