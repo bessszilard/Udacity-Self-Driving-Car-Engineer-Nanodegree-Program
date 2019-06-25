@@ -31,9 +31,7 @@ class PID {
    */
   double TotalError();
 
-  double Limit_actuator(double u_t);
-
-private:
+  private :
   /**
    * PID Errors
    */
@@ -48,6 +46,9 @@ private:
   double Ki;
   double Kd;
   double actuator[2];
+
+  double Integration_windup(double error);
+  double Limit_actuator(double u_t);
 };
 
 #endif  // PID_H

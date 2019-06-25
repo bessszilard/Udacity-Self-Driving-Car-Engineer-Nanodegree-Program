@@ -25,10 +25,21 @@ void PID::Init(double Kp_, double Ki_, double Kd_, double act[]) {
 
 double PID::Limit_actuator(double u_t) {
   if (u_t < actuator[0])
-    u_t = -actuator[0];
+    u_t = actuator[0];
   if (actuator[1] < u_t)
     u_t = actuator[1];
   return u_t;
+}
+
+double PID::Integration_windup(double error) {
+  /*
+   * Limit Kp * error_i to max min limit
+   */
+  if (error < actuator[0] / Kp)
+    error = actuator[0] / Kp;
+  if (actuator[1] / Kp < error)
+    error = 1 / actuator[1] / Kp;
+  return error;
 }
 
 double PID::GetActuation(double error) {
@@ -39,12 +50,14 @@ double PID::GetActuation(double error) {
   static double error_prev = 0;
   double error_d = error - error_prev;
   error_i += error;
+  error_i = Integration_windup(error_i);
+
   error_prev = error;
   
   double u_t = Kp * error + Ki * error_i + Kd * error_d;
 
   std::cout << std::fixed << std::setprecision(5);
-  cout << "P: "<< Kp * error / u_t << "\tD: " << Kd * error_d / u_t << "\t";
+  cout << "P: " << Kp * error / u_t << "\tI: " << Ki * error_i / u_t << "\tD: " << Kd * error_d / u_t << "\t";
 
   u_t = Limit_actuator(u_t);
   return u_t;

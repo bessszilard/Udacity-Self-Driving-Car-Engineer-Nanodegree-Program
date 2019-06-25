@@ -53,8 +53,8 @@ int main() {
   // double Kd = 0.15f;
   // double Ki = 0.0f;
   double Kp = 0.1f;
-  double Kd = 2.0f;
-  double Ki = 0.0f;
+  double Kd = 3.0f;
+  double Ki = 0.0000325f;
   double steering_limits[2] = {-1.0f, 1.0f};
   pid.Init(Kp, Ki, Kd, steering_limits);
 
@@ -101,10 +101,8 @@ int main() {
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
-        
-          if (speed > 22 )
-            msgJson["throttle"] = -0.2;
-          if (20 <= speed && speed <= 22)
+          double max_speed = 30;
+          if (max_speed <= speed )
             msgJson["throttle"] = 0.0;
           else 
             // msgJson["throttle"] = 0.2;
