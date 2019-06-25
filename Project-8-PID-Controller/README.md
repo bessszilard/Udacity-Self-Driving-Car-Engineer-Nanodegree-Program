@@ -1,7 +1,13 @@
 # CarND-Controls-PID
 Self-Driving Car Engineer Nanodegree Program
 
+
+
+[![youtube_cover](writeup_images\youtube_cover.jpg)](https://www.youtube.com/watch?v=3-9EjmQHY-8)
+
 ---
+
+*Figure 1: Youtube video snapshot*
 
 ## Dependencies
 
@@ -16,6 +22,7 @@ Self-Driving Car Engineer Nanodegree Program
   * Mac: same deal as make - [install Xcode command line tools]((https://developer.apple.com/xcode/features/)
   * Windows: recommend using [MinGW](http://www.mingw.org/)
 * [uWebSockets](https://github.com/uWebSockets/uWebSockets)
+  
   * Run either `./install-mac.sh` or `./install-ubuntu.sh`.
   * If you install from source, checkout to commit `e94b6e1`, i.e.
     ```
@@ -37,62 +44,71 @@ Fellow students have put together a guide to Windows set-up for the project [her
 
 Tips for setting up your environment can be found [here](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/23d376c7-0195-4276-bdf0-e02f1f3c665d)
 
-## Editor Settings
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
+## Hyperparameters
 
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
+Formula:
 
-## Code Style
+```u_t = Kp * error + Ki * error_i * dt + Kd * error_d / dt```
+*Kp - proportional term,* 
+*Ki - integral term,*
+*Kd - derivative term*
+*error_i - integral of the error*
+*error_d - derivative of the error.*
+*u_t - actuation, which is saturated with the actuator limits.*
 
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
+### Conclusions:
 
-## Project Instructions and Rubric
+**Kp** is important in the bends. If Kp is too small,  the car slides off in the bend. If Kp is too big, the controller oscillates, because actuation will be too big for a small errors.
 
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
+**Ki** is important to minimize the error to zero. Ki is capable to eliminate biases. If Ki is too small, the error doesn't converges to 0. If Ki is too big, oscillation will occur.
 
-More information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/f1820894-8322-4bb3-81aa-b26b3c6dcbaf/lessons/e8235395-22dd-4b87-88e0-d108c5e5bbf4/concepts/6a4d8d42-6a04-4aa6-b284-1697c0fd6562)
-for instructions and the project rubric.
+**Kd** is important to reduce the controller oscillation.
 
-## Hints!
 
-* You don't have to follow this directory structure, but if you do, your work
-  will span all of the .cpp files here. Keep an eye out for TODOs.
 
-## Call for IDE Profiles Pull Requests
+## Hyperparameter tuning
 
-Help your fellow students!
+I manually tuned the hyperparameters which steps are describes in [Thomas Braun Embedded Robotics p. 71. "4.2.4 PID Parameter tuning" sections](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.474.8129&rep=rep1&type=pdf).
 
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to we ensure
-that students don't feel pressured to use one IDE or another.
+My debug message for debugging looked like this:
 
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
+``` P: 0.83296      I: 0.22356      D: -0.05652     0.35370
+P: 0.96940      I: 0.26452      D: -0.23393     0.34810
+P: 0.91841      I: 0.25389      D: -0.17230     0.34380
+P: 0.95193      I: 0.26736      D: -0.21929     0.33860
+P: 0.99357      I: 0.28442      D: -0.27798     0.33240
+P: 1.03104      I: 0.30166      D: -0.33269     0.32540
+P: 1.07899      I: 0.32372      D: -0.40271     0.31750
+P: 1.12863      I: 0.34833      D: -0.47696     0.30880
+P: 3.30839      I: 1.09158      D: -3.39998     0.28900
+P: -1.38068     I: -0.51956     D: 2.90024      0.25350
+```
 
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
+Where 
 
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
+```C++
+P = Kp  * error / u_t; 
 
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
+I = Ki * error_i / u_t;
 
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
+D = Kd * error / u_t;
+```
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+Last column is the ```cte```. 
+
+With this debug message, I could determine which PID term is the most dominant.
+
+
+
+
+
+![PID_PD_comapre](writeup_images\PID_PD_comapre.svg)
+
+*Figure 2: Comparing PID and PD controller results*
+
+```
+PID_RMSE = 0.563876707
+PD_RMSE  = 0.617450845
+```
 
