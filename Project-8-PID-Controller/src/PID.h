@@ -17,7 +17,7 @@ class PID {
    * Initialize PID.
    * @param (Kp_, Ki_, Kd_) The initial PID coefficients
    */
-  void Init(double Kp_, double Ki_, double Kd_);
+  void Init(double Kp_, double Ki_, double Kd_, double act[]);
 
   /**
    * Update the PID error variables given cross track error.
@@ -31,7 +31,9 @@ class PID {
    */
   double TotalError();
 
- private:
+  double Limit_actuator(double u_t);
+
+private:
   /**
    * PID Errors
    */
@@ -45,6 +47,7 @@ class PID {
   double Kp;
   double Ki;
   double Kd;
+  double actuator[2];
 };
 
 #endif  // PID_H

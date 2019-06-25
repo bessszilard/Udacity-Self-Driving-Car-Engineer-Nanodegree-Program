@@ -4,6 +4,7 @@
 #include <string>
 #include "json.hpp"
 #include "PID.h"
+#include "math.h"
 
 // for convenience
 using nlohmann::json;
@@ -30,17 +31,39 @@ string hasData(string s) {
   return "";
 }
 
+double angle_trajectory_gen(double cte, double limit[2]) {
+  double norm = 60.0f;//3.5f;
+  double angle = -sin(cte / norm * M_PI_2l ) * limit[1]; // this is an angle
+  if (angle < limit[0])
+    angle = -limit[0];
+  if (limit[1] < angle)
+    angle = limit[1];
+  return angle;
+}
+
 int main() {
   uWS::Hub h;
 
   PID pid;
+  PID pid_speed;
   /**
    * TODO: Initialize the pid variable.
    */
-  double Kp = 0.075f;
-  double Kd = 0.15f;
-  double Ki = 0.0;
-  pid.Init(Kp, Ki, Kd);
+  // double Kp = 0.075f;
+  // double Kd = 0.15f;
+  // double Ki = 0.0f;
+  double Kp = 0.1f;
+  double Kd = 0.0f;
+  double Ki = 0.0f;
+  double steering_limits[2] = {-1.0f, 1.0f};
+  pid.Init(Kp, Ki, Kd, steering_limits);
+
+  double Kp_speed = 0.075f;
+  double Kd_speed = 0.0f;
+  double Ki_speed = 0.0f;
+  double throttle_limits[2] = {-1.0f, 1.0f};
+  pid_speed.Init(Kp_speed, Ki_speed, Kd_speed, throttle_limits);
+
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                      uWS::OpCode opCode) {
@@ -60,7 +83,10 @@ int main() {
           double cte = std::stod(j[1]["cte"].get<string>());
           double speed = std::stod(j[1]["speed"].get<string>());
           double angle = std::stod(j[1]["steering_angle"].get<string>());
-          double steer_value = pid.GetActuation(cte);
+
+          double angle_limits[2] = {-10.0f, 10.0f};
+          double ref_angle = angle_trajectory_gen(cte, angle_limits);
+          double steer_value = pid.GetActuation(-cte); // ref_angle - angle);
           /**
            * TODO: Calculate steering value here, remember the steering value is
            *   [-1, 1].
@@ -69,8 +95,9 @@ int main() {
            */
 
           // DEBUG
-          std::cout << "CTE: " << cte << "\tSteering Value: " << steer_value 
-                    << std::endl;
+          std::cout << std::fixed << std::setprecision(5);
+          std::cout << "CTE: " << cte << "\tSteering Value: " << steer_value
+                    << "\tref angle: " << ref_angle << "\tAngle: " << angle << std::endl;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
