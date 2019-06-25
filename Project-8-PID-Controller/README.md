@@ -3,7 +3,7 @@ Self-Driving Car Engineer Nanodegree Program
 
 
 
-[![youtube_cover](writeup_images\youtube_cover.jpg)](https://www.youtube.com/watch?v=3-9EjmQHY-8)
+[![youtube_cover](writeup_images/youtube_cover.jpg)](https://www.youtube.com/watch?v=3-9EjmQHY-8)
 
 ---
 
@@ -59,17 +59,17 @@ Formula:
 
 ### Conclusions:
 
-**Kp** is important in the bends. If Kp is too small,  the car slides off in the bend. If Kp is too big, the controller oscillates, because actuation will be too big for a small errors.
+**Kp** is important in the bends. If Kp is too small,  the car slides off in the bend. If Kp is too big, the controller oscillates, because actuation will be too big for small errors.
 
-**Ki** is important to minimize the error to zero. Ki is capable to eliminate biases. If Ki is too small, the error doesn't converges to 0. If Ki is too big, oscillation will occur.
+**Ki** is essential to minimize the error to zero. Ki is capable of eliminating biases. If Ki is too small, the error doesn't converge to 0. If Ki is too big, oscillation will occur.
 
-**Kd** is important to reduce the controller oscillation.
+**Kd** is vital to reduce the controller oscillation.
 
 
 
 ## Hyperparameter tuning
 
-I manually tuned the hyperparameters which steps are describes in [Thomas Braun Embedded Robotics p. 71. "4.2.4 PID Parameter tuning" sections](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.474.8129&rep=rep1&type=pdf).
+I manually tuned the hyperparameters which steps are described in [Thomas Braun Embedded Robotics p. 71. "4.2.4 PID Parameter tuning" sections](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.474.8129&rep=rep1&type=pdf).
 
 My debug message for debugging looked like this:
 
@@ -95,7 +95,7 @@ I = Ki * error_i / u_t;
 D = Kd * error / u_t;
 ```
 
-Last column is the ```cte```. 
+The last column is the ```CTE```. 
 
 With this debug message, I could determine which PID term is the most dominant.
 
@@ -103,7 +103,7 @@ With this debug message, I could determine which PID term is the most dominant.
 
 
 
-![PID_PD_comapre](writeup_images\PID_PD_comapre.svg)
+![PID_PD_comapre](writeup_images/PID_PD_compare.png)
 
 *Figure 2: Comparing PID and PD controller results*
 
