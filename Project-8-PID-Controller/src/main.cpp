@@ -53,7 +53,7 @@ int main() {
   // double Kd = 0.15f;
   // double Ki = 0.0f;
   double Kp = 0.1f;
-  double Kd = 0.0f;
+  double Kd = 2.0f;
   double Ki = 0.0f;
   double steering_limits[2] = {-1.0f, 1.0f};
   pid.Init(Kp, Ki, Kd, steering_limits);
@@ -97,7 +97,7 @@ int main() {
           // DEBUG
           std::cout << std::fixed << std::setprecision(5);
           std::cout << "CTE: " << cte << "\tSteering Value: " << steer_value
-                    << "\tref angle: " << ref_angle << "\tAngle: " << angle << std::endl;
+                  << std::endl;//  << "\tref angle: " << ref_angle << "\tAngle: " << angle << std::endl;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;

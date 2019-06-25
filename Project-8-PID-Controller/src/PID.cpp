@@ -1,5 +1,9 @@
+#include <iostream>
+#include <iomanip>
 #include "PID.h"
 
+using std::cout;
+using std::endl;
 /**
  * TODO: Complete the PID class. You may add any additional desired functions.
  */
@@ -33,13 +37,14 @@ double PID::GetActuation(double error) {
    */
   static double error_i = 0;
   static double error_prev = 0;
-  double error_d = error_prev - error;
+  double error_d = error - error_prev;
   error_i += error;
   error_prev = error;
-
+  
   double u_t = Kp * error + Ki * error_i + Kd * error_d;
 
-  // saturation
+  std::cout << std::fixed << std::setprecision(5);
+  cout << "P: "<< Kp * error / u_t << "\tD: " << Kd * error_d / u_t << "\t";
 
   u_t = Limit_actuator(u_t);
   return u_t;
