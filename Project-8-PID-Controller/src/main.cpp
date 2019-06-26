@@ -67,15 +67,12 @@ double get_throttle(double speed, double steer_value) {
   PID pid;
   PID pid_speed;
   /**
-   * TODO: Initialize the pid variable.
+   * Initializing the pid variable.
    */
-  // double Kp = 0.075f;
-  // double Kd = 0.15f;
-  // double Ki = 0.0f;
   double Kp = 0.2f;
   double Kd = 3.0f;
-  double Ki = 0.0000325f;
-  double steering_limits[2] = {-1.0f, 1.0f};
+  double Ki = 0.00024f;
+  double steering_limits[2] = {-1.0f, 1.0f};  // actuator limits
   pid.Init(Kp, Ki, Kd, steering_limits);
 
    h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
@@ -96,7 +93,6 @@ double get_throttle(double speed, double steer_value) {
           double cte = std::stod(j[1]["cte"].get<string>());
           double speed = std::stod(j[1]["speed"].get<string>());
           double steer_value = pid.GetActuation(-cte);
-          // static int counter = 0;
 
           // DEBUG
           std::cout << std::fixed << std::setprecision(5);
@@ -106,18 +102,11 @@ double get_throttle(double speed, double steer_value) {
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
-          // double max_speed = 50;
-          // if (max_speed <= speed )
-          //   msgJson["throttle"] = 0.0;
-          // else 
-          //   // msgJson["throttle"] = 0.2;
-          //   msgJson["throttle"] = 1.2;
           msgJson["throttle"] = get_throttle(speed, steer_value);
-
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-        }  // end "telemetry" if
+        }
       } else {
         // Manual driving
         string msg = "42[\"manual\",{}]";

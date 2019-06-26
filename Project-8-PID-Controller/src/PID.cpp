@@ -5,7 +5,7 @@
 using std::cout;
 using std::endl;
 /**
- * TODO: Complete the PID class. You may add any additional desired functions.
+ * The PID class implementation.
  */
 
 PID::PID() {}
@@ -14,7 +14,7 @@ PID::~PID() {}
 
 void PID::Init(double Kp_, double Ki_, double Kd_, double act[]) {
   /**
-   * TODO: Initialize PID coefficients (and errors, if needed)
+   * Initializing PID coefficients, and actuator limits
    */
   Kp = Kp_;
   Ki = Ki_;
