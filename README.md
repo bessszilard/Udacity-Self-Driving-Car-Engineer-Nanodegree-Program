@@ -6,3 +6,11 @@
 * Traffic Sign Classifier
 * Behavioral Cloning
 * Extended Kalman Filters
+
+## Term 2 Projets
+* Kidnapped Vehicle
+* Highway Driving
+* PID Controller
+* Improve Your LinkedIn Profile
+* Optimize Your GitHub Profile
+* Programming a Real Self-Driving Car
