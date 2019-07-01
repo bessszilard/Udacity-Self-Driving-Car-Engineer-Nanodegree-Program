@@ -120,9 +120,12 @@ int main() {
 
               check_car_s += ((double) prev_size * 0.02 * check_speed);
 
-              if ((check_car_s > car_s) && ((check_car_s - car_s) < 30))
+              if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
                 // ref_vel = 29.5; // mph
                 too_close = true;
+              if (lane > 0)
+                lane = 0; // left lane
+              }
             } 
           }
 
@@ -130,6 +133,9 @@ int main() {
             ref_vel -= 0.224;
           else if(ref_vel < 49.5)
             ref_vel += 0.224;
+
+          // 56:45
+
 
           vector<double> ptsx;
           vector<double> ptsy;
