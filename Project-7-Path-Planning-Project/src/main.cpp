@@ -105,6 +105,26 @@ int main() {
            */
           int prev_size = previous_path_x.size();   // last path
 
+          if (prev_size > 0)
+            car_s = end_path_s;
+
+          bool too_close = false;
+
+          for (size_t i = 0; i < sensor_fusion.size(); ++i) {
+            float d = sensor_fusion[i][6];
+            if (d < (2 + 4 * lane + 2) && d > (2 + 4 * lane - 2)) { // car is in our lane 
+              double vx = sensor_fusion[i][3];
+              double vy = sensor_fusion[i][4];
+              double check_speed = sqrt(vx * vx + vy * vy);
+              double check_car_s = sensor_fusion[i][5];
+
+              check_car_s += ((double) prev_size * 0.02 * check_speed);
+
+              if ((check_car_s > car_s) && ((check_car_s - car_s) < 30))
+                ref_vel = 29.5; // mph
+            } 
+          }
+
           vector<double> ptsx;
           vector<double> ptsy;
 
@@ -205,20 +225,8 @@ int main() {
             next_y_vals.push_back(y_point);
           }
 
-          // we have 2 ref points + 3 points forward at 30, 60, 90 meter
+          // 39:58
 
-          // double dist_inc = 0.4;
-          // for (int i = 0; i < 50; ++i) {
-          //   double next_s = car_s + (i + 1)*dist_inc;
-          //   double next_d = 6;
-
-          //   vector<double> next_xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-
-          //   next_x_vals.push_back(next_xy[0]); // car_x+(dist_inc*i)*cos(deg2rad(car_yaw)));
-          //   next_y_vals.push_back(next_xy[1]); //car_y+(dist_inc*i)*sin(deg2rad(car_yaw)));
-          //   // next_x_vals.push_back(car_x+(dist_inc*i)*cos(deg2rad(car_yaw)));
-          //   // next_y_vals.push_back(car_y+(dist_inc*i)*sin(deg2rad(car_yaw)));
-          // }
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
