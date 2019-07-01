@@ -34,7 +34,7 @@ int main() {
   std::ifstream in_map_(map_file_.c_str(), std::ifstream::in);
 
   int lane = 1;
-  double ref_vel = 49.5; // mph
+  double ref_vel = 0.0f; // mph
   
   string line;
   while (getline(in_map_, line)) {
@@ -121,9 +121,15 @@ int main() {
               check_car_s += ((double) prev_size * 0.02 * check_speed);
 
               if ((check_car_s > car_s) && ((check_car_s - car_s) < 30))
-                ref_vel = 29.5; // mph
+                // ref_vel = 29.5; // mph
+                too_close = true;
             } 
           }
+
+          if (too_close)
+            ref_vel -= 0.224;
+          else if(ref_vel < 49.5)
+            ref_vel += 0.224;
 
           vector<double> ptsx;
           vector<double> ptsy;
