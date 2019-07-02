@@ -110,7 +110,7 @@ namespace Highway_decision_tester
 			lanes[2] = rigtLane_;
 			int result = 0;
 			
-			int[] lane_speeds = {6, 7, 8, 9};
+			double[] lane_speeds = {20.0, 10.0, 5.0};
 //			// distance fine, -> KL
 			if (DIST_BUF < lanes[cur_lane].dist || PROP_VEL <= lanes[cur_lane].v )
 				result = (int)lanes[cur_lane].id;
@@ -126,6 +126,7 @@ namespace Highway_decision_tester
 			}
 			
 //			rtb_Pred_results.Clear();
+			double[] weight = { Convert.ToDouble(tb_cost_w1.Text), Convert.ToDouble(tb_cost_w2.Text), Convert.ToDouble(tb_cost_w3.Text)};
 			rtb_Pred_results.Text = "";
 			int intended_lane = cur_lane;
 			for (int goal_lane = 0; goal_lane < 3; ++goal_lane) {
@@ -135,15 +136,20 @@ namespace Highway_decision_tester
 						continue;
 					}
 					double cost1 = goal_distance_cost(goal_lane, intended_lane, final_lane, lanes[cur_lane].dist);
-					double cost2 = inefficiency_cost((int)lanes[cur_lane].v, intended_lane, final_lane, lane_speeds);
+					double cost2 = inefficiency_cost(my_vel, intended_lane, goal_lane, lane_speeds);
+					double cost3 = car_distance_cost(lanes[final_lane].dist);
+					double cost_sum = weight[0] * cost1 + weight[1] * cost2 + weight[2]* cost3;
 					rtb_Pred_results.AppendText(cur_lane.ToString() + " -> " + goal_lane + " -> " + final_lane + "\t");
-					rtb_Pred_results.AppendText(cost1.ToString() + " \t" + cost2.ToString() + "\n");
+					rtb_Pred_results.AppendText(cost1.ToString("0.00000") + " \t" + cost2.ToString("0.00000") + "\t" + cost3.ToString("0.00000") + "\t");
+					rtb_Pred_results.AppendText(cost_sum.ToString("0.00000") + "\n");
 				}
 			}
 			
 			return result;
 		}
-		
+		double car_distance_cost(int goal_lane_dist) {
+			return 30.0f / goal_lane_dist;
+		}
 		
 		double goal_distance_cost(int goal_lane, int intended_lane, int final_lane, double distance_to_goal) {
 		  // The cost increases with both the distance of intended lane from the goal
@@ -155,13 +161,12 @@ namespace Highway_decision_tester
 		}
 		
 //		double inefficiency_cost(int target_speed, int intended_lane, int final_lane, const std::vector<int> &lane_speeds) {
-		double inefficiency_cost(int target_speed, int intended_lane, int final_lane, int[] lane_speeds) {
+		double inefficiency_cost(double target_speed, int intended_lane, int final_lane, double[] lane_speeds) {
 		  // Cost becomes higher for trajectories with intended lane and final lane 
 		  //   that have traffic slower than target_speed.
 		  double speed_intended = lane_speeds[intended_lane];
 		  double speed_final = lane_speeds[final_lane];
-		  double cost = Math.Abs((2.0*target_speed - speed_intended - speed_final)/target_speed);
-		
+		  double cost = (2.0 * target_speed - speed_intended - speed_final) / (2.0 *  target_speed);
 		  return cost;
 		}
 		
@@ -289,6 +294,18 @@ namespace Highway_decision_tester
 			update_dist(ref hsb_RightLane, ref lbl_RightLane_dist, ref RightLane_veh, -my_vel);
 			
 			set_current_pos((laneId_enum) get_Lane( (int)get_current_pos(), LeftLane_veh, MidLane_veh, RightLane_veh));
+		}
+		void Tb_cost_w1TextChanged(object sender, EventArgs e)
+		{
+			displayLane();
+		}
+		void Tb_cost_w2TextChanged(object sender, EventArgs e)
+		{
+			displayLane();
+		}
+		void Tb_cost_w3TextChanged(object sender, EventArgs e)
+		{
+			displayLane();
 		}
 	}
 }
