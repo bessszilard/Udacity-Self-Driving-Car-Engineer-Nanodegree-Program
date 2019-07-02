@@ -6,3 +6,11 @@ C:\Users\besss\Documents\SharpDevelop Projects\Highway_decision_tester\Highway_d
 C:\Users\besss\Documents\SharpDevelop Projects\Highway_decision_tester\Highway_decision_tester\obj\Debug\Highway_decision_tester.exe
 C:\Users\besss\Documents\SharpDevelop Projects\Highway_decision_tester\Highway_decision_tester\obj\Debug\Highway_decision_tester.pdb
 C:\Users\besss\Documents\SharpDevelop Projects\Highway_decision_tester\Highway_decision_tester\obj\Debug\Highway_decision_tester.MainForm.resources
+C:\Users\besss\Documents\GitHub\Udacity-Self-Driving-Car-Engineer-Nanodegree-Program\Project-7-Path-Planning-Project\Highway_decision_tester\Highway_decision_tester\bin\Debug\Highway_decision_tester.exe.config
+C:\Users\besss\Documents\GitHub\Udacity-Self-Driving-Car-Engineer-Nanodegree-Program\Project-7-Path-Planning-Project\Highway_decision_tester\Highway_decision_tester\bin\Debug\Highway_decision_tester.exe
+C:\Users\besss\Documents\GitHub\Udacity-Self-Driving-Car-Engineer-Nanodegree-Program\Project-7-Path-Planning-Project\Highway_decision_tester\Highway_decision_tester\bin\Debug\Highway_decision_tester.pdb
+C:\Users\besss\Documents\GitHub\Udacity-Self-Driving-Car-Engineer-Nanodegree-Program\Project-7-Path-Planning-Project\Highway_decision_tester\Highway_decision_tester\obj\Debug\Highway_decision_tester.csprojResolveAssemblyReference.cache
+C:\Users\besss\Documents\GitHub\Udacity-Self-Driving-Car-Engineer-Nanodegree-Program\Project-7-Path-Planning-Project\Highway_decision_tester\Highway_decision_tester\obj\Debug\Highway_decision_tester.MainForm.resources
+C:\Users\besss\Documents\GitHub\Udacity-Self-Driving-Car-Engineer-Nanodegree-Program\Project-7-Path-Planning-Project\Highway_decision_tester\Highway_decision_tester\obj\Debug\Highway_decision_tester.csproj.GenerateResource.Cache
+C:\Users\besss\Documents\GitHub\Udacity-Self-Driving-Car-Engineer-Nanodegree-Program\Project-7-Path-Planning-Project\Highway_decision_tester\Highway_decision_tester\obj\Debug\Highway_decision_tester.exe
+C:\Users\besss\Documents\GitHub\Udacity-Self-Driving-Car-Engineer-Nanodegree-Program\Project-7-Path-Planning-Project\Highway_decision_tester\Highway_decision_tester\obj\Debug\Highway_decision_tester.pdb

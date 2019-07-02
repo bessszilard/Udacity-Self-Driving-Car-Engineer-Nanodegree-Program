@@ -35,9 +35,14 @@ namespace Highway_decision_tester
 		private System.Windows.Forms.Label lbl_MidLane_dist;
 		private System.Windows.Forms.Label lbl_RightLane_dist;
 		private System.Windows.Forms.GroupBox gp_pred;
-		private System.Windows.Forms.Button button3;
-		private System.Windows.Forms.Button button1;
-		private System.Windows.Forms.Button button2;
+		private System.Windows.Forms.Button bt_RightLane_pred;
+		private System.Windows.Forms.Button bt_LeftLane_pred;
+		private System.Windows.Forms.Button bt_MidLane_pred;
+		private System.Windows.Forms.Button bt_get_pred;
+		private System.Windows.Forms.Button bt_step;
+		private System.Windows.Forms.Label label6;
+		private System.Windows.Forms.TextBox tb_my_vel;
+		private System.Windows.Forms.Label label7;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -81,9 +86,14 @@ namespace Highway_decision_tester
 			this.lbl_MidLane_dist = new System.Windows.Forms.Label();
 			this.lbl_RightLane_dist = new System.Windows.Forms.Label();
 			this.gp_pred = new System.Windows.Forms.GroupBox();
-			this.button1 = new System.Windows.Forms.Button();
-			this.button2 = new System.Windows.Forms.Button();
-			this.button3 = new System.Windows.Forms.Button();
+			this.bt_RightLane_pred = new System.Windows.Forms.Button();
+			this.bt_LeftLane_pred = new System.Windows.Forms.Button();
+			this.bt_MidLane_pred = new System.Windows.Forms.Button();
+			this.bt_get_pred = new System.Windows.Forms.Button();
+			this.bt_step = new System.Windows.Forms.Button();
+			this.label6 = new System.Windows.Forms.Label();
+			this.tb_my_vel = new System.Windows.Forms.TextBox();
+			this.label7 = new System.Windows.Forms.Label();
 			this.gb_my_car_pos.SuspendLayout();
 			this.gp_pred.SuspendLayout();
 			this.SuspendLayout();
@@ -95,6 +105,7 @@ namespace Highway_decision_tester
 			this.rb_LeftLane.Size = new System.Drawing.Size(21, 24);
 			this.rb_LeftLane.TabIndex = 3;
 			this.rb_LeftLane.UseVisualStyleBackColor = true;
+			this.rb_LeftLane.CheckedChanged += new System.EventHandler(this.Rb_LeftLaneCheckedChanged);
 			// 
 			// gb_my_car_pos
 			// 
@@ -116,6 +127,7 @@ namespace Highway_decision_tester
 			this.rb_RightLane.Size = new System.Drawing.Size(21, 24);
 			this.rb_RightLane.TabIndex = 5;
 			this.rb_RightLane.UseVisualStyleBackColor = true;
+			this.rb_RightLane.CheckedChanged += new System.EventHandler(this.Rb_RightLaneCheckedChanged);
 			// 
 			// rb_MidLane
 			// 
@@ -126,6 +138,7 @@ namespace Highway_decision_tester
 			this.rb_MidLane.TabIndex = 4;
 			this.rb_MidLane.TabStop = true;
 			this.rb_MidLane.UseVisualStyleBackColor = true;
+			this.rb_MidLane.CheckedChanged += new System.EventHandler(this.Rb_MidLaneCheckedChanged);
 			// 
 			// Lb_lane_line
 			// 
@@ -273,9 +286,9 @@ namespace Highway_decision_tester
 			// 
 			// gp_pred
 			// 
-			this.gp_pred.Controls.Add(this.button3);
-			this.gp_pred.Controls.Add(this.button1);
-			this.gp_pred.Controls.Add(this.button2);
+			this.gp_pred.Controls.Add(this.bt_RightLane_pred);
+			this.gp_pred.Controls.Add(this.bt_LeftLane_pred);
+			this.gp_pred.Controls.Add(this.bt_MidLane_pred);
 			this.gp_pred.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.gp_pred.Location = new System.Drawing.Point(92, 12);
 			this.gp_pred.Name = "gp_pred";
@@ -284,42 +297,96 @@ namespace Highway_decision_tester
 			this.gp_pred.TabStop = false;
 			this.gp_pred.Text = "pred";
 			// 
-			// button1
+			// bt_RightLane_pred
 			// 
-			this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.button1.Location = new System.Drawing.Point(3, 25);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(102, 30);
-			this.button1.TabIndex = 21;
-			this.button1.Text = "Left Lane";
-			this.button1.UseVisualStyleBackColor = true;
+			this.bt_RightLane_pred.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.bt_RightLane_pred.Location = new System.Drawing.Point(3, 132);
+			this.bt_RightLane_pred.Name = "bt_RightLane_pred";
+			this.bt_RightLane_pred.Size = new System.Drawing.Size(102, 30);
+			this.bt_RightLane_pred.TabIndex = 23;
+			this.bt_RightLane_pred.Text = "Right Lane";
+			this.bt_RightLane_pred.UseVisualStyleBackColor = true;
 			// 
-			// button2
+			// bt_LeftLane_pred
 			// 
-			this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.button2.Location = new System.Drawing.Point(3, 83);
-			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(102, 30);
-			this.button2.TabIndex = 22;
-			this.button2.Text = "Mid Lane";
-			this.button2.UseVisualStyleBackColor = true;
+			this.bt_LeftLane_pred.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.bt_LeftLane_pred.Location = new System.Drawing.Point(3, 25);
+			this.bt_LeftLane_pred.Name = "bt_LeftLane_pred";
+			this.bt_LeftLane_pred.Size = new System.Drawing.Size(102, 30);
+			this.bt_LeftLane_pred.TabIndex = 21;
+			this.bt_LeftLane_pred.Text = "Left Lane";
+			this.bt_LeftLane_pred.UseVisualStyleBackColor = true;
 			// 
-			// button3
+			// bt_MidLane_pred
 			// 
-			this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.button3.Location = new System.Drawing.Point(3, 132);
-			this.button3.Name = "button3";
-			this.button3.Size = new System.Drawing.Size(102, 30);
-			this.button3.TabIndex = 23;
-			this.button3.Text = "Right Lane";
-			this.button3.UseVisualStyleBackColor = true;
+			this.bt_MidLane_pred.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.bt_MidLane_pred.Location = new System.Drawing.Point(3, 83);
+			this.bt_MidLane_pred.Name = "bt_MidLane_pred";
+			this.bt_MidLane_pred.Size = new System.Drawing.Size(102, 30);
+			this.bt_MidLane_pred.TabIndex = 22;
+			this.bt_MidLane_pred.Text = "Mid Lane";
+			this.bt_MidLane_pred.UseVisualStyleBackColor = true;
+			// 
+			// bt_get_pred
+			// 
+			this.bt_get_pred.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.bt_get_pred.Location = new System.Drawing.Point(689, 30);
+			this.bt_get_pred.Name = "bt_get_pred";
+			this.bt_get_pred.Size = new System.Drawing.Size(92, 68);
+			this.bt_get_pred.TabIndex = 21;
+			this.bt_get_pred.Text = "Get Prediction";
+			this.bt_get_pred.UseVisualStyleBackColor = true;
+			this.bt_get_pred.Click += new System.EventHandler(this.Bt_get_predClick);
+			// 
+			// bt_step
+			// 
+			this.bt_step.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.bt_step.Location = new System.Drawing.Point(686, 106);
+			this.bt_step.Name = "bt_step";
+			this.bt_step.Size = new System.Drawing.Size(92, 68);
+			this.bt_step.TabIndex = 22;
+			this.bt_step.Text = "One Step";
+			this.bt_step.UseVisualStyleBackColor = true;
+			this.bt_step.Click += new System.EventHandler(this.Bt_stepClick);
+			// 
+			// label6
+			// 
+			this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label6.Location = new System.Drawing.Point(140, 207);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(57, 23);
+			this.label6.TabIndex = 24;
+			this.label6.Text = "mph";
+			// 
+			// tb_my_vel
+			// 
+			this.tb_my_vel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.tb_my_vel.Location = new System.Drawing.Point(75, 204);
+			this.tb_my_vel.Name = "tb_my_vel";
+			this.tb_my_vel.Size = new System.Drawing.Size(62, 26);
+			this.tb_my_vel.TabIndex = 23;
+			this.tb_my_vel.TextChanged += new System.EventHandler(this.Tb_my_velTextChanged);
+			// 
+			// label7
+			// 
+			this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label7.Location = new System.Drawing.Point(12, 207);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(57, 23);
+			this.label7.TabIndex = 25;
+			this.label7.Text = "My vel";
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-			this.ClientSize = new System.Drawing.Size(841, 231);
+			this.ClientSize = new System.Drawing.Size(790, 250);
+			this.Controls.Add(this.label7);
+			this.Controls.Add(this.label6);
+			this.Controls.Add(this.tb_my_vel);
+			this.Controls.Add(this.bt_step);
+			this.Controls.Add(this.bt_get_pred);
 			this.Controls.Add(this.gp_pred);
 			this.Controls.Add(this.lbl_RightLane_dist);
 			this.Controls.Add(this.lbl_MidLane_dist);
