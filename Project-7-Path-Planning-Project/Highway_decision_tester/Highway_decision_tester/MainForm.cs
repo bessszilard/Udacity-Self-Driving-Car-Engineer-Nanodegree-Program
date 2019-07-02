@@ -76,6 +76,26 @@ namespace Highway_decision_tester
 			return current_lane;
 		}
 		
+		void set_current_pos(laneId_enum id) {
+			rb_LeftLane.Checked = false;
+			rb_MidLane.Checked = false;
+			rb_RightLane.Checked = false;
+			
+			switch(id) {
+				case laneId_enum.LEFT_LANE: 
+					rb_LeftLane.Checked = true;
+					break;
+				case laneId_enum.MID_LANE: 
+					rb_MidLane.Checked = true;
+					break;
+				case laneId_enum.RIGHT_LANE: 
+					rb_RightLane.Checked = true;
+					break;
+				
+			}
+		}
+		
+		
 		const int DIST_BUF = 30;
 		const double PROP_VEL = 49.5;
 		double my_vel = 0.0f;
@@ -88,9 +108,16 @@ namespace Highway_decision_tester
 			// distance fine, -> KL
 			if (DIST_BUF < lanes[cur_lane].dist || PROP_VEL <= lanes[cur_lane].v )
 				return (int)lanes[cur_lane].id;
-			else if(DIST_BUF < lanes[cur_lane - 1].dist)
-				return (int)lanes[cur_lane].id - 1;
-			
+			if (0 < cur_lane ) {
+				// go to lane 
+				if(DIST_BUF < lanes[cur_lane - 1].dist)
+					return (int)lanes[cur_lane].id - 1;
+			}
+			else {
+				// go to lane 
+				if(DIST_BUF < lanes[cur_lane + 1].dist)
+					return (int)lanes[cur_lane].id + 1;
+			}
 			return (int)lanes[cur_lane].id;
 		}
 		
@@ -196,6 +223,8 @@ namespace Highway_decision_tester
 			update_dist(ref hsb_LeftLane, ref lbl_LeftLane_dist, ref LeftLane_veh, my_vel);
 			update_dist(ref hsb_MidLane, ref lbl_MidLane_dist, ref MidLane_veh, my_vel);
 			update_dist(ref hsb_RightLane, ref lbl_RightLane_dist, ref RightLane_veh, my_vel);
+			
+			set_current_pos((laneId_enum) get_Lane( (int)get_current_pos(), LeftLane_veh, MidLane_veh, RightLane_veh));
 		}
 		void Tb_my_velTextChanged(object sender, EventArgs e)
 		{
