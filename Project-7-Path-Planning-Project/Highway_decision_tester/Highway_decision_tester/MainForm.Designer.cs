@@ -43,6 +43,8 @@ namespace Highway_decision_tester
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.TextBox tb_my_vel;
 		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.RichTextBox rtb_Pred_results;
+		private System.Windows.Forms.Button bt_One_step_back;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -94,6 +96,8 @@ namespace Highway_decision_tester
 			this.label6 = new System.Windows.Forms.Label();
 			this.tb_my_vel = new System.Windows.Forms.TextBox();
 			this.label7 = new System.Windows.Forms.Label();
+			this.rtb_Pred_results = new System.Windows.Forms.RichTextBox();
+			this.bt_One_step_back = new System.Windows.Forms.Button();
 			this.gb_my_car_pos.SuspendLayout();
 			this.gp_pred.SuspendLayout();
 			this.SuspendLayout();
@@ -152,6 +156,7 @@ namespace Highway_decision_tester
 			// hsb_LeftLane
 			// 
 			this.hsb_LeftLane.Location = new System.Drawing.Point(341, 34);
+			this.hsb_LeftLane.Minimum = 1;
 			this.hsb_LeftLane.Name = "hsb_LeftLane";
 			this.hsb_LeftLane.Size = new System.Drawing.Size(272, 30);
 			this.hsb_LeftLane.TabIndex = 6;
@@ -161,6 +166,7 @@ namespace Highway_decision_tester
 			// hsb_MidLane
 			// 
 			this.hsb_MidLane.Location = new System.Drawing.Point(341, 87);
+			this.hsb_MidLane.Minimum = 1;
 			this.hsb_MidLane.Name = "hsb_MidLane";
 			this.hsb_MidLane.Size = new System.Drawing.Size(272, 30);
 			this.hsb_MidLane.TabIndex = 8;
@@ -179,6 +185,7 @@ namespace Highway_decision_tester
 			// hsb_RightLane
 			// 
 			this.hsb_RightLane.Location = new System.Drawing.Point(341, 140);
+			this.hsb_RightLane.Minimum = 1;
 			this.hsb_RightLane.Name = "hsb_RightLane";
 			this.hsb_RightLane.Size = new System.Drawing.Size(272, 30);
 			this.hsb_RightLane.TabIndex = 10;
@@ -330,7 +337,7 @@ namespace Highway_decision_tester
 			// bt_get_pred
 			// 
 			this.bt_get_pred.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.bt_get_pred.Location = new System.Drawing.Point(689, 30);
+			this.bt_get_pred.Location = new System.Drawing.Point(686, 12);
 			this.bt_get_pred.Name = "bt_get_pred";
 			this.bt_get_pred.Size = new System.Drawing.Size(92, 68);
 			this.bt_get_pred.TabIndex = 21;
@@ -341,7 +348,7 @@ namespace Highway_decision_tester
 			// bt_step
 			// 
 			this.bt_step.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.bt_step.Location = new System.Drawing.Point(686, 106);
+			this.bt_step.Location = new System.Drawing.Point(686, 86);
 			this.bt_step.Name = "bt_step";
 			this.bt_step.Size = new System.Drawing.Size(92, 68);
 			this.bt_step.TabIndex = 22;
@@ -376,12 +383,34 @@ namespace Highway_decision_tester
 			this.label7.TabIndex = 25;
 			this.label7.Text = "My vel";
 			// 
+			// rtb_Pred_results
+			// 
+			this.rtb_Pred_results.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.rtb_Pred_results.Location = new System.Drawing.Point(13, 234);
+			this.rtb_Pred_results.Name = "rtb_Pred_results";
+			this.rtb_Pred_results.Size = new System.Drawing.Size(765, 283);
+			this.rtb_Pred_results.TabIndex = 26;
+			this.rtb_Pred_results.Text = "";
+			// 
+			// bt_One_step_back
+			// 
+			this.bt_One_step_back.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.bt_One_step_back.Location = new System.Drawing.Point(686, 160);
+			this.bt_One_step_back.Name = "bt_One_step_back";
+			this.bt_One_step_back.Size = new System.Drawing.Size(92, 68);
+			this.bt_One_step_back.TabIndex = 27;
+			this.bt_One_step_back.Text = "One Step Back";
+			this.bt_One_step_back.UseVisualStyleBackColor = true;
+			this.bt_One_step_back.Click += new System.EventHandler(this.Bt_One_step_backClick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-			this.ClientSize = new System.Drawing.Size(790, 250);
+			this.ClientSize = new System.Drawing.Size(790, 529);
+			this.Controls.Add(this.bt_One_step_back);
+			this.Controls.Add(this.rtb_Pred_results);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.tb_my_vel);
