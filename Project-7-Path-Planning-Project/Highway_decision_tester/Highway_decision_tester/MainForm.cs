@@ -22,11 +22,13 @@ namespace Highway_decision_tester
 	{	
 		enum actions_enum { KL, LCL, RCL };
 		enum laneId_enum { LEFT_LANE, MID_LANE, RIGHT_LANE };
-			
+		const double DEF_MY_VEL = 20.0f;
+
 		class Lane {
 			public int dist;
 			public double v;
 			public laneId_enum id;
+			private const double DEF_LANE_VEL = 10.0f;
 			
 			public Lane() {
 				dist = 0;
@@ -37,7 +39,7 @@ namespace Highway_decision_tester
 			public Lane(laneId_enum id_) {
 				dist = 0;
 				id = id_;
-				v = 0;
+				v = DEF_LANE_VEL;
 			}
 		}
 		
@@ -66,6 +68,9 @@ namespace Highway_decision_tester
 			lbl_RightLane_dist.Text = RightLane_veh.dist.ToString() + "m";
 			tb_RightLane_speed.Text = RightLane_veh.v.ToString();
 			def_but_bg_color = bt_LeftLane_pred.BackColor;
+			
+			my_vel = DEF_MY_VEL;
+			tb_my_vel.Text = my_vel.ToString();
 		}
 		
 		laneId_enum get_current_pos() {
@@ -95,7 +100,6 @@ namespace Highway_decision_tester
 			}
 		}
 		
-		
 		const int DIST_BUF = 30;
 		const double PROP_VEL = 49.5;
 		double my_vel = 0.0f;
@@ -104,21 +108,57 @@ namespace Highway_decision_tester
 			lanes[0] = leftLane_;
 			lanes[1] = midLane_;
 			lanes[2] = rigtLane_;
+			int result = 0;
 			
-			// distance fine, -> KL
+			int[] lane_speeds = {6, 7, 8, 9};
+//			// distance fine, -> KL
 			if (DIST_BUF < lanes[cur_lane].dist || PROP_VEL <= lanes[cur_lane].v )
-				return (int)lanes[cur_lane].id;
-			if (0 < cur_lane ) {
+				result = (int)lanes[cur_lane].id;
+			else if (0 < cur_lane ) {
 				// go to lane 
 				if(DIST_BUF < lanes[cur_lane - 1].dist)
-					return (int)lanes[cur_lane].id - 1;
+					result = (int)lanes[cur_lane].id - 1;
 			}
 			else {
 				// go to lane 
 				if(DIST_BUF < lanes[cur_lane + 1].dist)
-					return (int)lanes[cur_lane].id + 1;
+					result = (int)lanes[cur_lane].id + 1;
 			}
-			return (int)lanes[cur_lane].id;
+			
+//			rtb_Pred_results.Clear();
+			rtb_Pred_results.Text = "";
+			int intended_lane = cur_lane;
+			for (int goal_lane = 0; goal_lane < 3; ++goal_lane) {
+				for (int final_lane = 0; final_lane < 3; ++final_lane) {
+					double cost1 = goal_distance_cost(goal_lane, intended_lane, final_lane, lanes[cur_lane].dist);
+					double cost2 = inefficiency_cost((int)lanes[cur_lane].v, intended_lane, final_lane, lane_speeds);
+					rtb_Pred_results.AppendText(cur_lane.ToString() + " -> " + goal_lane + " -> " + final_lane + "\t");
+					rtb_Pred_results.AppendText(cost1.ToString() + " \t" + cost2.ToString() + "\n");
+				}
+			}
+			
+			return result;
+		}
+		
+		
+		double goal_distance_cost(int goal_lane, int intended_lane, int final_lane, double distance_to_goal) {
+		  // The cost increases with both the distance of intended lane from the goal
+		  //   and the distance of the final lane from the goal. The cost of being out 
+		  //   of the goal lane also becomes larger as the vehicle approaches the goal.
+		    
+		  double cost = 1 - Math.Exp(-Math.Abs(2.0f * goal_lane - intended_lane - final_lane) / distance_to_goal);
+		  return cost;
+		}
+		
+//		double inefficiency_cost(int target_speed, int intended_lane, int final_lane, const std::vector<int> &lane_speeds) {
+		double inefficiency_cost(int target_speed, int intended_lane, int final_lane, int[] lane_speeds) {
+		  // Cost becomes higher for trajectories with intended lane and final lane 
+		  //   that have traffic slower than target_speed.
+		  double speed_intended = lane_speeds[intended_lane];
+		  double speed_final = lane_speeds[final_lane];
+		  double cost = (2.0*target_speed - speed_intended - speed_final)/target_speed;
+		
+		  return cost;
 		}
 		
 		void displayLane(){
@@ -212,6 +252,8 @@ namespace Highway_decision_tester
 			int nextLeftLaneValue = (int)(lane_.dist - my_vel - lane_.v);
 			if (nextLeftLaneValue < 0 )
 				nextLeftLaneValue += sb.Maximum;
+			if (sb.Maximum < nextLeftLaneValue)
+				nextLeftLaneValue -= sb.Maximum;
 			lane_.dist = nextLeftLaneValue;
 			sb.Value = nextLeftLaneValue;
 			hsb_LeftLane.Update();
@@ -235,6 +277,14 @@ namespace Highway_decision_tester
 				tb_my_vel.Text = "0";
 			}
 			displayLane();	
+		}
+		void Bt_One_step_backClick(object sender, EventArgs e)
+		{
+			update_dist(ref hsb_LeftLane, ref lbl_LeftLane_dist, ref LeftLane_veh, -my_vel);
+			update_dist(ref hsb_MidLane, ref lbl_MidLane_dist, ref MidLane_veh, -my_vel);
+			update_dist(ref hsb_RightLane, ref lbl_RightLane_dist, ref RightLane_veh, -my_vel);
+			
+			set_current_pos((laneId_enum) get_Lane( (int)get_current_pos(), LeftLane_veh, MidLane_veh, RightLane_veh));
 		}
 	}
 }
