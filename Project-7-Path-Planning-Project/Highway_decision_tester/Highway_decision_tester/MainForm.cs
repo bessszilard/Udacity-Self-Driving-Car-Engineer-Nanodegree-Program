@@ -39,7 +39,7 @@ namespace Highway_decision_tester
 			public Lane(laneId_enum id_) {
 				dist = 0;
 				id = id_;
-				v = DEF_LANE_VEL;
+				v = DEF_LANE_VEL - (double)id_ * DEF_LANE_VEL / 4;
 			}
 		}
 		
@@ -130,6 +130,10 @@ namespace Highway_decision_tester
 			int intended_lane = cur_lane;
 			for (int goal_lane = 0; goal_lane < 3; ++goal_lane) {
 				for (int final_lane = 0; final_lane < 3; ++final_lane) {
+					// invalid scenari
+					if ((final_lane == goal_lane && (final_lane != goal_lane) || (intended_lane == final_lane && goal_lane != intended_lane))) {
+						continue;
+					}
 					double cost1 = goal_distance_cost(goal_lane, intended_lane, final_lane, lanes[cur_lane].dist);
 					double cost2 = inefficiency_cost((int)lanes[cur_lane].v, intended_lane, final_lane, lane_speeds);
 					rtb_Pred_results.AppendText(cur_lane.ToString() + " -> " + goal_lane + " -> " + final_lane + "\t");
@@ -156,7 +160,7 @@ namespace Highway_decision_tester
 		  //   that have traffic slower than target_speed.
 		  double speed_intended = lane_speeds[intended_lane];
 		  double speed_final = lane_speeds[final_lane];
-		  double cost = (2.0*target_speed - speed_intended - speed_final)/target_speed;
+		  double cost = Math.Abs((2.0*target_speed - speed_intended - speed_final)/target_speed);
 		
 		  return cost;
 		}
