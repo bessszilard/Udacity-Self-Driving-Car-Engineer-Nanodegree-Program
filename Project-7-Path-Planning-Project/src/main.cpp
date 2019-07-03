@@ -8,6 +8,7 @@
 #include "helpers.h"
 #include "json.hpp"
 #include "spline.h"
+#include "cost_functions.hpp"
 
 // for convenience
 using nlohmann::json;
@@ -15,6 +16,9 @@ using std::string;
 using std::vector;
 using std::cout;
 using std::endl;
+
+double get_cost_fucion();
+
 
 int main() {
   uWS::Hub h;
