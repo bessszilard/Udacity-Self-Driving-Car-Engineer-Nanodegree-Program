@@ -128,7 +128,7 @@ int main() {
 
               check_car_s += ((double) prev_size * 0.02 * check_speed);
               // we look for the nearest car which is ahead of us and or aside of us
-              if (check_car_s < LeftLane.dist && car_s < check_car_s + 10) {
+              if ((check_car_s - car_s) < LeftLane.dist && car_s < check_car_s + 10) {
                 LeftLane.dist = check_car_s - car_s;
                 LeftLane.v    = check_speed;
               }
@@ -145,7 +145,7 @@ int main() {
 
               check_car_s += ((double) prev_size * 0.02 * check_speed);
               // we look for the nearest car
-              if (check_car_s < MidLane.dist && car_s < check_car_s + 10) {
+              if ((check_car_s - car_s) < MidLane.dist && car_s < check_car_s + 10) {
                 MidLane.dist = check_car_s - car_s;
                 MidLane.v    = check_speed;
               }
@@ -162,7 +162,7 @@ int main() {
 
               check_car_s += ((double) prev_size * 0.02 * check_speed);
               // we look for the nearest car
-              if (check_car_s < RightLane.dist && car_s < check_car_s + 10) {
+              if ((check_car_s - car_s) < RightLane.dist && car_s < check_car_s + 10) {
                 RightLane.dist = check_car_s - car_s;
                 RightLane.v    = check_speed;
               }
@@ -195,7 +195,7 @@ int main() {
             // else if(lane == 1)
             //   --lane;
           }
-          cout << LeftLane.dist << "\t" << MidLane.dist << "\t" << RightLane.dist << endl;
+          // cout << LeftLane.dist << "\t" << MidLane.dist << "\t" << RightLane.dist << endl;
 
           if (too_close)
             ref_vel -= 0.224;

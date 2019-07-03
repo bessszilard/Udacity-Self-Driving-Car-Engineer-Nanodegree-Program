@@ -63,15 +63,15 @@ int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, doubl
     if (min_cost < weight[2])   // if it too risky, we will stay in the lane
         return next_lane;
     else {
-        cout << "TOO RISKY!!!!!!!\n";
+        if (cur_lane != next_lane)
+            cout << "TOO RISKY!!!!!!!\n";
         return cur_lane;
     }
-        
 }
 
 double car_distance_cost(Lane mid_lane, int intended_lane, int goal_lane_dist, int final_lane_dist) {
-    double cost_goal = goal_lane_dist + 10;
-    double cost_final = final_lane_dist + 10;
+    double cost_goal = (double)(goal_lane_dist % 300)   + 10;
+    double cost_final = (double)(final_lane_dist % 300) + 10;
     
     if (goal_lane_dist < 30)        // smaller than alloved distance return with max error
         return 1;
@@ -85,7 +85,7 @@ double car_distance_cost(Lane mid_lane, int intended_lane, int goal_lane_dist, i
     //     cost_final = 30.0f / (final_lane_dist + 10);
     // else
     //     cost_final = 30.0f /  (final_lane_dist + 10) + 60.0f / (mid_lane.dist + 10);
-    return 1 - exp( - 1.0 / (fabs((double)cost_goal + (double)cost_final)));
+    return 1 - exp( - 1.0 / (fabs(cost_goal * 3 + cost_final)));
 }
 
 double goal_distance_cost(int goal_lane, int intended_lane, int final_lane, double distance_to_goal) {
