@@ -40,7 +40,8 @@ int main() {
 
   int lane = 1;
   double ref_vel = 0.0f; // mph
-  
+  double goal_speed = 49.5f;
+
   string line;
   while (getline(in_map_, line)) {
     std::istringstream iss(line);
@@ -61,7 +62,7 @@ int main() {
     map_waypoints_dy.push_back(d_y);
   }
 
-  h.onMessage([&lane,&ref_vel,&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
+  h.onMessage([&lane,&ref_vel, &goal_speed, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
                &map_waypoints_dx,&map_waypoints_dy]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
@@ -189,7 +190,7 @@ int main() {
           //   } 
           }
           if (too_close) {
-            lane = get_Lane(lane, LeftLane, MidLane, RightLane, ref_vel );
+            lane = get_Lane(lane, LeftLane, MidLane, RightLane, ref_vel, goal_speed );
             // if (lane == 0)
             //   ++lane;
             // else if(lane == 1)
@@ -197,8 +198,12 @@ int main() {
           }
           // cout << LeftLane.dist << "\t" << MidLane.dist << "\t" << RightLane.dist << endl;
 
-          if (too_close)
-            ref_vel -= 0.224;
+          if (too_close) {
+            if (ref_vel < goal_speed)
+              ref_vel += 0.224;
+            else
+              ref_vel -= 0.224;
+          }
           else if(ref_vel < 49.5)
             ref_vel += 0.224;
 

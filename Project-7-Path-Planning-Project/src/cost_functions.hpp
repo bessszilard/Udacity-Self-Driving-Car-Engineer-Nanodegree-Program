@@ -33,7 +33,7 @@ class Lane {
 
 };
 
-int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, double my_vel);
+int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, double my_vel, double &goal_speed);
 
 #endif /* COST_FUNCTIONS_HPP */
 

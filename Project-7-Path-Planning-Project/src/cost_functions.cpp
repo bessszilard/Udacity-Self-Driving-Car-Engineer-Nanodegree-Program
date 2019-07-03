@@ -12,7 +12,7 @@ double goal_distance_cost(int goal_lane, int intended_lane, int final_lane, doub
 double inefficiency_cost(double target_speed, int intended_lane, int final_lane, double lane_speeds[]);
 
 		
-int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, double my_vel) {
+int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, double my_vel, double &goal_speed) {
     Lane lanes[3];
     lanes[0].copy(leftLane_);
     lanes[1].copy(midLane_);
@@ -26,6 +26,7 @@ int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, doubl
     // rtb_Pred_results.Text = "";
     int intended_lane = cur_lane;
     double min_cost = 999;
+    double min_cost_speed = 0.0f;
     double costs_print[3] = {0, 0, 0};
     int next_lane = 0;
     for (int goal_lane = 0; goal_lane < 3; ++goal_lane) {
@@ -44,6 +45,7 @@ int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, doubl
             if (cost_sum < min_cost) {
                 min_cost = cost_sum;
                 next_lane = goal_lane;
+                min_cost_speed = lanes[cur_lane].v;
                 costs_print[0] = cost1;
                 costs_print[1] = cost2;
                 costs_print[2] = cost3;
@@ -60,19 +62,27 @@ int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, doubl
     cout << "----------------------------------------------------" << endl;
     
     
-    if (min_cost < weight[2])   // if it too risky, we will stay in the lane
+    if (min_cost < weight[2]) {  // if it too risky, we will stay in the lane
+        goal_speed = 49.5;          // max speed
         return next_lane;
+    }
     else {
         if (cur_lane != next_lane)
             cout << "TOO RISKY!!!!!!!\n";
+        goal_speed = min_cost_speed;
         return cur_lane;
     }
 }
 
 double car_distance_cost(Lane mid_lane, int intended_lane, int goal_lane_dist, int final_lane_dist) {
-    double cost_goal = (double)(goal_lane_dist % 300)   + 10;
-    double cost_final = (double)(final_lane_dist % 300) + 10;
+    double cost_goal = (double)(goal_lane_dist)   + 10;
+    double cost_final = (double)(final_lane_dist) + 10;
     
+    if (300 < cost_goal)
+        cost_goal = 300;
+    if (300 < cost_final)
+        cost_final = 300;
+
     if (goal_lane_dist < 30)        // smaller than alloved distance return with max error
         return 1;
 
