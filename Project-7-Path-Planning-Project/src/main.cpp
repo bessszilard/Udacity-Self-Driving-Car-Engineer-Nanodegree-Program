@@ -120,7 +120,7 @@ int main() {
 
           for (size_t i = 0; i < sensor_fusion.size(); ++i) {
             float d = sensor_fusion[i][6];
-            if (d < (2 + 4 * LeftLane.id + 2) && d > (2 + 4 * LeftLane.id - 2)) { // car is in our lane 
+            if (d < (2 + 4 * LeftLane.id + 2) && d > (2 + 4 * LeftLane.id - 2)) { // car is in left lane 
               double vx = sensor_fusion[i][3];
               double vy = sensor_fusion[i][4];
               double check_speed = sqrt(vx * vx + vy * vy);
@@ -137,7 +137,7 @@ int main() {
                 // cout << LeftLane.id << " " <<  check_car_s << endl;
               }
             }
-            if (d < (2 + 4 * MidLane.id + 2) && d > (2 + 4 * MidLane.id - 2)) { // car is in our lane 
+            if (d < (2 + 4 * MidLane.id + 2) && d > (2 + 4 * MidLane.id - 2)) { // car is in mid lane 
               double vx = sensor_fusion[i][3];
               double vy = sensor_fusion[i][4];
               double check_speed = sqrt(vx * vx + vy * vy);
@@ -188,7 +188,6 @@ int main() {
             //   }
           //   } 
           }
-          cout << LeftLane.dist << "\t" << MidLane.dist << "\t" << RightLane.dist << endl;
           if (too_close) {
             lane = get_Lane(lane, LeftLane, MidLane, RightLane, ref_vel );
             // if (lane == 0)
@@ -196,6 +195,7 @@ int main() {
             // else if(lane == 1)
             //   --lane;
           }
+          cout << LeftLane.dist << "\t" << MidLane.dist << "\t" << RightLane.dist << endl;
 
           if (too_close)
             ref_vel -= 0.224;
