@@ -114,81 +114,82 @@ int main() {
           if (prev_size > 0)
             car_s = end_path_s;
 
-          bool too_close = false;
+          // bool too_close = false;
           Lane LeftLane  = Lane(0, FREE_LINE);
           Lane MidLane   = Lane(1, FREE_LINE);
           Lane RightLane = Lane(2, FREE_LINE);
+          // int x = get_decision(sensor_fusion);
+          bool too_close = update_lanes(sensor_fusion, car_s, prev_size, lane, LeftLane, MidLane, RightLane);
+          // for (size_t i = 0; i < sensor_fusion.size(); ++i) {
+          //   float d = sensor_fusion[i][6];
+          //   if (d < (2 + 4 * LeftLane.id + 2) && d > (2 + 4 * LeftLane.id - 2)) { // car is in left lane 
+          //     double vx = sensor_fusion[i][3];
+          //     double vy = sensor_fusion[i][4];
+          //     double check_speed = sqrt(vx * vx + vy * vy);
+          //     double check_car_s = sensor_fusion[i][5];
 
-          for (size_t i = 0; i < sensor_fusion.size(); ++i) {
-            float d = sensor_fusion[i][6];
-            if (d < (2 + 4 * LeftLane.id + 2) && d > (2 + 4 * LeftLane.id - 2)) { // car is in left lane 
-              double vx = sensor_fusion[i][3];
-              double vy = sensor_fusion[i][4];
-              double check_speed = sqrt(vx * vx + vy * vy);
-              double check_car_s = sensor_fusion[i][5];
+          //     check_car_s += ((double) prev_size * 0.02 * check_speed);
+          //     // we look for the nearest car which is ahead of us and or aside of us
+          //     if ((check_car_s - car_s) < LeftLane.dist && car_s < check_car_s + 10) {
+          //       LeftLane.dist = check_car_s - car_s;
+          //       LeftLane.v    = check_speed;
+          //     }
+          //     if (lane == LeftLane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
+          //       too_close = true;
+          //       // cout << LeftLane.id << " " <<  check_car_s << endl;
+          //     }
+          //   }
+          //   if (d < (2 + 4 * MidLane.id + 2) && d > (2 + 4 * MidLane.id - 2)) { // car is in mid lane 
+          //     double vx = sensor_fusion[i][3];
+          //     double vy = sensor_fusion[i][4];
+          //     double check_speed = sqrt(vx * vx + vy * vy);
+          //     double check_car_s = sensor_fusion[i][5];
 
-              check_car_s += ((double) prev_size * 0.02 * check_speed);
-              // we look for the nearest car which is ahead of us and or aside of us
-              if ((check_car_s - car_s) < LeftLane.dist && car_s < check_car_s + 10) {
-                LeftLane.dist = check_car_s - car_s;
-                LeftLane.v    = check_speed;
-              }
-              if (lane == LeftLane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
-                too_close = true;
-                // cout << LeftLane.id << " " <<  check_car_s << endl;
-              }
-            }
-            if (d < (2 + 4 * MidLane.id + 2) && d > (2 + 4 * MidLane.id - 2)) { // car is in mid lane 
-              double vx = sensor_fusion[i][3];
-              double vy = sensor_fusion[i][4];
-              double check_speed = sqrt(vx * vx + vy * vy);
-              double check_car_s = sensor_fusion[i][5];
+          //     check_car_s += ((double) prev_size * 0.02 * check_speed);
+          //     // we look for the nearest car
+          //     if ((check_car_s - car_s) < MidLane.dist && car_s < check_car_s + 10) {
+          //       MidLane.dist = check_car_s - car_s;
+          //       MidLane.v    = check_speed;
+          //     }
+          //     if (lane == MidLane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
+          //       too_close = true;
+          //       // cout << MidLane.id << " " <<  check_car_s << endl;
+          //     }
+          //   }
+          //   if (d < (2 + 4 * RightLane.id + 2) && d > (2 + 4 * RightLane.id - 2)) { // car is in our lane 
+          //     double vx = sensor_fusion[i][3];
+          //     double vy = sensor_fusion[i][4];
+          //     double check_speed = sqrt(vx * vx + vy * vy);
+          //     double check_car_s = sensor_fusion[i][5];
 
-              check_car_s += ((double) prev_size * 0.02 * check_speed);
-              // we look for the nearest car
-              if ((check_car_s - car_s) < MidLane.dist && car_s < check_car_s + 10) {
-                MidLane.dist = check_car_s - car_s;
-                MidLane.v    = check_speed;
-              }
-              if (lane == MidLane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
-                too_close = true;
-                // cout << MidLane.id << " " <<  check_car_s << endl;
-              }
-            }
-            if (d < (2 + 4 * RightLane.id + 2) && d > (2 + 4 * RightLane.id - 2)) { // car is in our lane 
-              double vx = sensor_fusion[i][3];
-              double vy = sensor_fusion[i][4];
-              double check_speed = sqrt(vx * vx + vy * vy);
-              double check_car_s = sensor_fusion[i][5];
+          //     check_car_s += ((double) prev_size * 0.02 * check_speed);
+          //     // we look for the nearest car
+          //     if ((check_car_s - car_s) < RightLane.dist && car_s < check_car_s + 10) {
+          //       RightLane.dist = check_car_s - car_s;
+          //       RightLane.v    = check_speed;
+          //     }
+          //     if (lane == RightLane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
+          //       too_close = true;
+          //       // cout << RightLane.id << " " <<  check_car_s << endl;
+          //     }
+          //   }
 
-              check_car_s += ((double) prev_size * 0.02 * check_speed);
-              // we look for the nearest car
-              if ((check_car_s - car_s) < RightLane.dist && car_s < check_car_s + 10) {
-                RightLane.dist = check_car_s - car_s;
-                RightLane.v    = check_speed;
-              }
-              if (lane == RightLane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
-                too_close = true;
-                // cout << RightLane.id << " " <<  check_car_s << endl;
-              }
-            }
+          //   // if (d < (2 + 4 * lane + 2) && d > (2 + 4 * lane - 2)) { // car is in our lane 
+          //   //   double vx = sensor_fusion[i][3];
+          //   //   double vy = sensor_fusion[i][4];
+          //   //   double check_speed = sqrt(vx * vx + vy * vy);
+          //   //   double check_car_s = sensor_fusion[i][5];
 
-            // if (d < (2 + 4 * lane + 2) && d > (2 + 4 * lane - 2)) { // car is in our lane 
-            //   double vx = sensor_fusion[i][3];
-            //   double vy = sensor_fusion[i][4];
-            //   double check_speed = sqrt(vx * vx + vy * vy);
-            //   double check_car_s = sensor_fusion[i][5];
+          //   //   check_car_s += ((double) prev_size * 0.02 * check_speed);
 
-            //   check_car_s += ((double) prev_size * 0.02 * check_speed);
-
-            //   if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
-            //     // ref_vel = 29.5; // mph
-            //     too_close = true;
-            //   // if (lane > 0)
-            //   //   lane = 0; // left lane
-            //   }
-          //   } 
-          }
+          //   //   if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
+          //   //     // ref_vel = 29.5; // mph
+          //   //     too_close = true;
+          //   //   // if (lane > 0)
+          //   //   //   lane = 0; // left lane
+          //   //   }
+          // //   } 
+          // }
           if (too_close) {
             lane = get_Lane(lane, LeftLane, MidLane, RightLane, ref_vel, goal_speed );
             // if (lane == 0)

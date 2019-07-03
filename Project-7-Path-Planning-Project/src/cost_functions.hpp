@@ -1,5 +1,6 @@
 #ifndef COST_FUNCTIONS_HPP
 #define COST_FUNCTIONS_HPP
+#include "json.hpp"
 
 class Lane {
     public: 
@@ -29,11 +30,9 @@ class Lane {
             id = loc_lane.id;
             v = loc_lane.v;
         }
-    // private:
-
 };
-
-int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, double my_vel, double &goal_speed);
+bool update_lanes(nlohmann::json sensor_fusion, double car_s, int prev_size, int lane, Lane &LeftLane, Lane &MidLane, Lane &RightLane);
+int  get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, double my_vel, double &goal_speed);
 
 #endif /* COST_FUNCTIONS_HPP */
 

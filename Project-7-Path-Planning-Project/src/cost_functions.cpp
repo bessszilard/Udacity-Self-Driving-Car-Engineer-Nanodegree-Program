@@ -11,6 +11,64 @@ double car_distance_cost(Lane mid_lane, int intended_lane, int goal_lane_dist, i
 double goal_distance_cost(int goal_lane, int intended_lane, int final_lane, double distance_to_goal);
 double inefficiency_cost(double target_speed, int intended_lane, int final_lane, double lane_speeds[]);
 
+bool update_lanes(nlohmann::json sensor_fusion, double car_s, int prev_size, int lane, Lane &LeftLane, Lane &MidLane, Lane &RightLane) {
+    bool too_close = false;
+    for (size_t i = 0; i < sensor_fusion.size(); ++i) {
+        float d = sensor_fusion[i][6];
+        if (d < (2 + 4 * LeftLane.id + 2) && d > (2 + 4 * LeftLane.id - 2)) { // car is in left lane 
+            double vx = sensor_fusion[i][3];
+            double vy = sensor_fusion[i][4];
+            double check_speed = sqrt(vx * vx + vy * vy);
+            double check_car_s = sensor_fusion[i][5];
+
+            check_car_s += ((double) prev_size * 0.02 * check_speed);
+            // we look for the nearest car which is ahead of us and or aside of us
+            if ((check_car_s - car_s) < LeftLane.dist && car_s < check_car_s + 10) {
+            LeftLane.dist = check_car_s - car_s;
+            LeftLane.v    = check_speed;
+            }
+            if (lane == LeftLane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
+                too_close = true;
+            // cout << LeftLane.id << " " <<  check_car_s << endl;
+            }
+        }
+        if (d < (2 + 4 * MidLane.id + 2) && d > (2 + 4 * MidLane.id - 2)) { // car is in mid lane 
+            double vx = sensor_fusion[i][3];
+            double vy = sensor_fusion[i][4];
+            double check_speed = sqrt(vx * vx + vy * vy);
+            double check_car_s = sensor_fusion[i][5];
+
+            check_car_s += ((double) prev_size * 0.02 * check_speed);
+            // we look for the nearest car
+            if ((check_car_s - car_s) < MidLane.dist && car_s < check_car_s + 10) {
+            MidLane.dist = check_car_s - car_s;
+            MidLane.v    = check_speed;
+            }
+            if (lane == MidLane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
+            too_close = true;
+            // cout << MidLane.id << " " <<  check_car_s << endl;
+            }
+        }
+        if (d < (2 + 4 * RightLane.id + 2) && d > (2 + 4 * RightLane.id - 2)) { // car is in our lane 
+            double vx = sensor_fusion[i][3];
+            double vy = sensor_fusion[i][4];
+            double check_speed = sqrt(vx * vx + vy * vy);
+            double check_car_s = sensor_fusion[i][5];
+
+            check_car_s += ((double) prev_size * 0.02 * check_speed);
+            // we look for the nearest car
+            if ((check_car_s - car_s) < RightLane.dist && car_s < check_car_s + 10) {
+            RightLane.dist = check_car_s - car_s;
+            RightLane.v    = check_speed;
+            }
+            if (lane == RightLane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
+            too_close = true;
+            // cout << RightLane.id << " " <<  check_car_s << endl;
+            }
+        }
+    }
+    return too_close;
+}
 		
 int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, double my_vel, double &goal_speed) {
     Lane lanes[3];
@@ -63,13 +121,13 @@ int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, doubl
     
     
     if (min_cost < weight[2]) {  // if it too risky, we will stay in the lane
-        goal_speed = 49.5;          // max speed
+        goal_speed = 49.5;       // max speed
         return next_lane;
     }
     else {
         if (cur_lane != next_lane)
             cout << "TOO RISKY!!!!!!!\n";
-        goal_speed = min_cost_speed;
+        goal_speed = min_cost_speed;    // lane speed
         return cur_lane;
     }
 }
@@ -86,15 +144,6 @@ double car_distance_cost(Lane mid_lane, int intended_lane, int goal_lane_dist, i
     if (goal_lane_dist < 30)        // smaller than alloved distance return with max error
         return 1;
 
-    // if (abs(intended_lane - goal_lane_dist) <= 1)
-    //     cost_goal = 30.0f / (goal_lane_dist + 10);
-    // // else
-    // //     cost_goal = 30.0f / (goal_lane_dist + 10) + 60.0f / (mid_lane.dist + 10);
-    
-    // if (abs(intended_lane - final_lane_dist) <= 1)
-    //     cost_final = 30.0f / (final_lane_dist + 10);
-    // else
-    //     cost_final = 30.0f /  (final_lane_dist + 10) + 60.0f / (mid_lane.dist + 10);
     return 1 - exp( - 1.0 / (fabs(cost_goal * 3 + cost_final)));
 }
 
