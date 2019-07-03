@@ -19,6 +19,12 @@ class Lane {
             const double DEF_LANE_VEL = 10.0f;
             v = DEF_LANE_VEL - (double)id_ * DEF_LANE_VEL / 4;
         }
+        Lane(int id_, int dist_s) {
+            dist = dist_s;
+            id = id_;
+            const double DEF_LANE_VEL = 10.0f;
+            v = DEF_LANE_VEL - (double)id_ * DEF_LANE_VEL / 4;
+        }
 
        void copy(Lane loc_lane) {
             dist = loc_lane.dist;
@@ -33,7 +39,7 @@ Lane LeftLane_veh = Lane(0);
 Lane MidLane_veh = Lane(1);
 Lane RightLane_veh = Lane(2);	
 
-int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_);
+int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, double my_vel);
 double car_distance_cost(Lane mid_lane, int intended_lane, int goal_lane_dist, int final_lane_dist);
 double goal_distance_cost(int goal_lane, int intended_lane, int final_lane, double distance_to_goal);
 double inefficiency_cost(double target_speed, int intended_lane, int final_lane, double lane_speeds[]);
