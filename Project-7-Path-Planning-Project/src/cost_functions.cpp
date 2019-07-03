@@ -7,69 +7,43 @@
 using std::cout;
 using std::endl;
 
-double car_distance_cost(Lane mid_lane, int intended_lane, int goal_lane_dist, int final_lane_dist);
-double goal_distance_cost(int goal_lane, int intended_lane, int final_lane, double distance_to_goal);
-double inefficiency_cost(double target_speed, int intended_lane, int final_lane, double lane_speeds[]);
+static double car_distance_cost(Lane mid_lane, int intended_lane, int goal_lane_dist, int final_lane_dist);
+static double goal_distance_cost(int goal_lane, int intended_lane, int final_lane, double distance_to_goal);
+static double inefficiency_cost(double target_speed, int intended_lane, int final_lane, double lane_speeds[]);
+static void update_single_lane(nlohmann::json sensor_fusion, int i, Lane &loc_lane, int lane, float d, double car_s, bool &too_close, int prev_size);
+
+void update_single_lane(nlohmann::json sensor_fusion, int i, Lane &loc_lane, int lane, float d, double car_s, bool &too_close, int prev_size) {
+     if (d < (2 + 4 * loc_lane.id + 2) && d > (2 + 4 * loc_lane.id - 2)) { // car is in left lane 
+        double vx = sensor_fusion[i][3];
+        double vy = sensor_fusion[i][4];
+        double check_speed = sqrt(vx * vx + vy * vy);
+        double check_car_s = sensor_fusion[i][5];
+
+        check_car_s += ((double) prev_size * 0.02 * check_speed);
+        // we look for the nearest car which is ahead of us and or aside of us
+        if ((check_car_s - car_s) < loc_lane.dist && car_s < check_car_s + 10) {
+        loc_lane.dist = check_car_s - car_s;
+        loc_lane.v    = check_speed;
+        }
+        if (lane == loc_lane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
+            too_close = true;
+        }
+    }
+}
 
 bool update_lanes(nlohmann::json sensor_fusion, double car_s, int prev_size, int lane, Lane &LeftLane, Lane &MidLane, Lane &RightLane) {
     bool too_close = false;
     for (size_t i = 0; i < sensor_fusion.size(); ++i) {
         float d = sensor_fusion[i][6];
-        if (d < (2 + 4 * LeftLane.id + 2) && d > (2 + 4 * LeftLane.id - 2)) { // car is in left lane 
-            double vx = sensor_fusion[i][3];
-            double vy = sensor_fusion[i][4];
-            double check_speed = sqrt(vx * vx + vy * vy);
-            double check_car_s = sensor_fusion[i][5];
-
-            check_car_s += ((double) prev_size * 0.02 * check_speed);
-            // we look for the nearest car which is ahead of us and or aside of us
-            if ((check_car_s - car_s) < LeftLane.dist && car_s < check_car_s + 10) {
-            LeftLane.dist = check_car_s - car_s;
-            LeftLane.v    = check_speed;
-            }
-            if (lane == LeftLane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
-                too_close = true;
-            // cout << LeftLane.id << " " <<  check_car_s << endl;
-            }
-        }
-        if (d < (2 + 4 * MidLane.id + 2) && d > (2 + 4 * MidLane.id - 2)) { // car is in mid lane 
-            double vx = sensor_fusion[i][3];
-            double vy = sensor_fusion[i][4];
-            double check_speed = sqrt(vx * vx + vy * vy);
-            double check_car_s = sensor_fusion[i][5];
-
-            check_car_s += ((double) prev_size * 0.02 * check_speed);
-            // we look for the nearest car
-            if ((check_car_s - car_s) < MidLane.dist && car_s < check_car_s + 10) {
-            MidLane.dist = check_car_s - car_s;
-            MidLane.v    = check_speed;
-            }
-            if (lane == MidLane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
-            too_close = true;
-            // cout << MidLane.id << " " <<  check_car_s << endl;
-            }
-        }
-        if (d < (2 + 4 * RightLane.id + 2) && d > (2 + 4 * RightLane.id - 2)) { // car is in our lane 
-            double vx = sensor_fusion[i][3];
-            double vy = sensor_fusion[i][4];
-            double check_speed = sqrt(vx * vx + vy * vy);
-            double check_car_s = sensor_fusion[i][5];
-
-            check_car_s += ((double) prev_size * 0.02 * check_speed);
-            // we look for the nearest car
-            if ((check_car_s - car_s) < RightLane.dist && car_s < check_car_s + 10) {
-            RightLane.dist = check_car_s - car_s;
-            RightLane.v    = check_speed;
-            }
-            if (lane == RightLane.id && (check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
-            too_close = true;
-            // cout << RightLane.id << " " <<  check_car_s << endl;
-            }
-        }
+        update_single_lane(sensor_fusion, i, LeftLane,  lane, d, car_s, too_close, prev_size);
+        update_single_lane(sensor_fusion, i, MidLane,   lane, d, car_s, too_close, prev_size);
+        update_single_lane(sensor_fusion, i, RightLane, lane, d, car_s, too_close, prev_size);
     }
     return too_close;
 }
-		
+/**
+ * Returns the prefered lane
+ */
 int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, double my_vel, double &goal_speed) {
     Lane lanes[3];
     lanes[0].copy(leftLane_);
@@ -132,8 +106,11 @@ int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, doubl
     }
 }
 
+/**
+ * The cost helps to choose that lane, which car is furthest away.
+ */
 double car_distance_cost(Lane mid_lane, int intended_lane, int goal_lane_dist, int final_lane_dist) {
-    double cost_goal = (double)(goal_lane_dist)   + 10;
+    double cost_goal  = (double)(goal_lane_dist)  + 10;
     double cost_final = (double)(final_lane_dist) + 10;
     
     if (300 < cost_goal)
@@ -147,6 +124,9 @@ double car_distance_cost(Lane mid_lane, int intended_lane, int goal_lane_dist, i
     return 1 - exp( - 1.0 / (fabs(cost_goal * 3 + cost_final)));
 }
 
+/**
+ * The cost helps to choose the fastest lane
+ */
 double goal_distance_cost(int goal_lane, int intended_lane, int final_lane, double distance_to_goal) {
     // The cost increases with both the distance of intended lane from the goal
     //   and the distance of the final lane from the goal. The cost of being out 
