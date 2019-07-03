@@ -1,6 +1,6 @@
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program
-   
+
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).  
 
@@ -26,38 +26,43 @@ The highway's waypoints loop around so the frenet s value, distance along the ro
 
 Here is the data provided from the Simulator to the C++ Program
 
-#### Main car's localization Data (No Noise)
 
-["x"] The car's x position in map coordinates
 
-["y"] The car's y position in map coordinates
+## The code model for generating paths
 
-["s"] The car's s position in frenet coordinates
+The path generation is consist of 3 steps: prediction, decision making and trajectory generation.
 
-["d"] The car's d position in frenet coordinates
+### Prediction
 
-["yaw"] The car's yaw angle in the map
+In this step, I updated all the three lane's state. The simulation sent the sensor fusion data, which contained, every necessarily information. I selected the current lane based on frenet d value. After update, I had the car's relative distance, velocity in each lane, which is ahead of my car, or after me after 10 m. This 10 meter tolerance was given to increase the maneuver safety. 
 
-["speed"] The car's speed in MPH
+In the code, the ```update_lanes()``` and the ```update_single_lane()``` implements these functionalities. in ```cost_functions.cpp``` file.  
 
-#### Previous path data given to the Planner
 
-//Note: Return the previous list but with processed points removed, can be a nice tool to show how far along
-the path has processed since last time. 
 
-["previous_path_x"] The previous list of x points previously given to the simulator
+### Making Decision
 
-["previous_path_y"] The previous list of y points previously given to the simulator
+Following the prediction, we could figure out the distances between my car, and the others. If the distance is less then 30 meter, we will try to change the lane. The decision is making function is implemented in ```get_Lane()``` function in ```cost_functions.cpp``` source file. I had 3 cost function to choose the optimal lane.
 
-#### Previous path's end s and d values 
+1. Cost 1 was to minimize the lane change movements. I measured  the distance between the intended, goal and final lane in the ```goal_distance_cost()``` function.
+2. Cost 2 was to choose the fastest lane. Cost function name is ```inefficiency_cost()```
+3.  The cost 3 helped to choose that lane, which car is furthest away. If the lane the car is nearer than buffer distance (30m), the function returns the maximal error value.
 
-["end_path_s"] The previous list's last point's frenet s value
+The cost functions have a range of [0 ... 1], which are multiplied with weights [1, 1, 10].  In the case that all the 3 lanes is slow, and in all of them cars approximately, at buffer limit, I prevented the lane change, because the collusion can occur easily.
 
-["end_path_d"] The previous list's last point's frenet d value
+If the lane is not changed, I tried to reduce car's average speed, to decrease the sway in the car's speed.
 
-#### Sensor Fusion Data, a list of all other car's attributes on the same side of the road. (No Noise)
+### Trajectory generation
 
-["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates. 
+To minimize tangential acceleration (x, y), I increased and decreased the speed gradually. In order to minimize jerks, I used the recommended spline library.
+
+
+
+### Highway tester
+
+I implanted a .NET windows application, where I can simulate the scenarios.
+
+
 
 ## Details
 
@@ -74,6 +79,7 @@ A really helpful resource for doing this project and creating smooth trajectorie
 ## Dependencies
 
 * cmake >= 3.5
+  
   * All OSes: [click here for installation instructions](https://cmake.org/install/)
 * make >= 4.1
   * Linux: make is installed by default on most Linux distros
