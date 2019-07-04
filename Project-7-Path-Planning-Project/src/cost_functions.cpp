@@ -82,17 +82,16 @@ int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, doubl
                 costs_print[1] = cost2;
                 costs_print[2] = cost3;
             }
-            cout << cur_lane << " -> " << goal_lane << " -> " << final_lane << "\t";
-            cout << cost_sum << " \t" << cost1 << "\t" << cost2 << "\t" << cost3;
-            cout << "\t\t" << lanes[goal_lane].dist << "\t" << lanes[final_lane].dist;
-            cout << endl;
+            cout << cur_lane << " -> " << goal_lane << " -> " << final_lane << "\t" << cost_sum  << endl;
+            // cout << " \t" << cost1 << "\t" << cost2 << "\t" << cost3;
+            // cout << "\t\t" << lanes[goal_lane].dist << "\t" << lanes[final_lane].dist;
+            // cout << endl;
         }
     }
     // rtb_Pred_results.AppendText("\n" + cur_lane.ToString() + " -> " + next_lane + "\n");
-    cout << cur_lane << " -> " << next_lane << "\t\t";
-    cout << min_cost << "\t\t" << costs_print[0] << "\t" << costs_print[1] << "\t" << costs_print[2]  << endl;
-    cout << "----------------------------------------------------" << endl;
-    
+    cout << cur_lane << " -> " << next_lane << "\t\t" << min_cost << endl;
+    // cout << "\t\t" << costs_print[0] << "\t" << costs_print[1] << "\t" << costs_print[2]  << endl;
+    cout << "------------------------" << endl;
     
     if (min_cost < weight[2]) {  // if it too risky, we will stay in the lane
         goal_speed = 49.5;       // max speed
@@ -100,7 +99,7 @@ int get_Lane( int cur_lane, Lane leftLane_, Lane midLane_, Lane rigtLane_, doubl
     }
     else {
         if (cur_lane != next_lane)
-            cout << "TOO RISKY!!!!!!!\n";
+            cout << "STAY IN THE LINE\n";
         goal_speed = min_cost_speed;    // lane speed
         return cur_lane;
     }
