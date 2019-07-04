@@ -129,6 +129,8 @@ namespace Highway_decision_tester
 			double[] weight = { Convert.ToDouble(tb_cost_w1.Text), Convert.ToDouble(tb_cost_w2.Text), Convert.ToDouble(tb_cost_w3.Text)};
 			rtb_Pred_results.Text = "";
 			int intended_lane = cur_lane;
+			double min_cost = 999;
+			int next_lane = 0;
 			for (int goal_lane = 0; goal_lane < 3; ++goal_lane) {
 				for (int final_lane = 0; final_lane < 3; ++final_lane) {
 					// invalid scenari
@@ -137,18 +139,37 @@ namespace Highway_decision_tester
 					}
 					double cost1 = goal_distance_cost(goal_lane, intended_lane, final_lane, lanes[cur_lane].dist);
 					double cost2 = inefficiency_cost(my_vel, intended_lane, goal_lane, lane_speeds);
-					double cost3 = car_distance_cost(lanes[final_lane].dist);
+					double cost3 = car_distance_cost(midLane_, intended_lane, lanes[goal_lane].dist, lanes[final_lane].dist);
 					double cost_sum = weight[0] * cost1 + weight[1] * cost2 + weight[2]* cost3;
+					
+					if (cost_sum < min_cost) {
+						min_cost = cost_sum;
+						next_lane = goal_lane;
+					}
 					rtb_Pred_results.AppendText(cur_lane.ToString() + " -> " + goal_lane + " -> " + final_lane + "\t");
 					rtb_Pred_results.AppendText(cost1.ToString("0.00000") + " \t" + cost2.ToString("0.00000") + "\t" + cost3.ToString("0.00000") + "\t");
 					rtb_Pred_results.AppendText(cost_sum.ToString("0.00000") + "\n");
 				}
 			}
-			
+			rtb_Pred_results.AppendText("\n" + cur_lane.ToString() + " -> " + next_lane + "\n");
+			result = next_lane;
 			return result;
 		}
-		double car_distance_cost(int goal_lane_dist) {
-			return 30.0f / goal_lane_dist;
+		// take care if we change 2 lanes at once
+		double car_distance_cost(Lane mid_lane, int intended_lane, int goal_lane_dist, int final_lane_dist) {
+			double cost_goal;
+			double cost_final;
+			
+			if (Math.Abs(intended_lane - goal_lane_dist) <= 1)
+				cost_goal = 30.0f / goal_lane_dist;
+			else
+				cost_goal = 30.0f / goal_lane_dist + 30.0f / mid_lane.dist;
+			
+			if (Math.Abs(intended_lane - final_lane_dist) <= 1)
+				cost_final = 30.0f / final_lane_dist;
+			else
+				cost_final = 30.0f / final_lane_dist + 30.0f / mid_lane.dist;
+			return cost_goal + cost_final;
 		}
 		
 		double goal_distance_cost(int goal_lane, int intended_lane, int final_lane, double distance_to_goal) {
