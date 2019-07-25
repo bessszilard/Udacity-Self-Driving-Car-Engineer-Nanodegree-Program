@@ -12,6 +12,4 @@
 * Kidnapped Vehicle
 * Highway Driving
 * PID Controller
-* Improve Your LinkedIn Profile
-* Optimize Your GitHub Profile
 * [Programming a Real Self-Driving Car](https://github.com/safdark/Automata-Capstone)
