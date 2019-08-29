@@ -1,6 +1,6 @@
 ## Advanced Lane Finding project
 
-![cover](writeup_images/Cover.jpg)
+[![cover](writeup_images/github_cover.jpg)](https://www.youtube.com/watch?v=dhsexUZopo0)
 
 The goals/steps of this project are the following:
 
@@ -170,9 +170,9 @@ file.  Main steps are:
 
 The curvature calculation is done by ```get_radius_in_meter()``` function in the Line class. Every time, when I call ```append()``` function to add new value to the class, I recalculate the radius. The current radius is the mean of the radius FIFO memory.
 
-#### 6.An example image of result plotted back down onto the road such that the lane area is identified clearly.
+#### 6. An example image of result plotted back down onto the road such that the lane area is identified clearly.
 
-![Example image](video_images/vlcsnap-00007.jpg)
+![cover](writeup_images/Cover.jpg)
 
 *Figure 8. Lane detection results*
 
