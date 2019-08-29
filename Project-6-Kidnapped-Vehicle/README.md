@@ -1,6 +1,6 @@
 # Kidnapped Vehicle
 
-![](writeup_images\Kidnapped_github.jpg)
+![](writeup_images/Kidnapped_github.jpg)
 
 
 
