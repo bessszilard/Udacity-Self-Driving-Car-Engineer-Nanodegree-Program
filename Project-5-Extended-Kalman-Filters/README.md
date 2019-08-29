@@ -1,7 +1,6 @@
 # Extended Kalman Filter Project
 
-![Cover photo](images/cover.jpg)
-https://www.youtube.com/watch?v=tFoQLuOtT-c
+[![Cover photo](images/cover.jpg)](https://www.youtube.com/watch?v=tFoQLuOtT-c)
 
 ## Set up environment:
 Install WSL (Windows subsystem Linux) on Windows 10 [Solution 1](https://docs.microsoft.com/en-us/windows/wsl/install-win10), [Soltuion 2](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/)
