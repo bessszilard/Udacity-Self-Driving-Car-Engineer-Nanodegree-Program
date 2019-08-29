@@ -1,6 +1,6 @@
 # Kidnapped Vehicle
 
-![](writeup_images/Kidnapped_github.jpg)
+[![](writeup_images/Kidnapped_github.jpg)](https://www.youtube.com/watch?v=CaLZjSTog6Y)
 
 
 
